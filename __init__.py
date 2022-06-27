@@ -9,12 +9,11 @@ else:
     imp.reload(icons)
 
 import bpy
-from bpy.app.handlers import persistent
 
 bl_info = {
     "name": "Poly Haven Assets",
     "description": "Dynamically adds all HDRIs, materials and 3D models from polyhaven.com into the Asset Browser",
-    "author": "Poly Haven: Greg Zaal",
+    "author": "Poly Haven",
     "version": (0, 0, 1),
     "blender": (3, 2, 0),
     "location": "Asset Browser",
@@ -34,9 +33,13 @@ def register():
     for cls in classes:
         register_class(cls)
 
+    bpy.types.USERPREF_PT_file_paths_asset_libraries.append(ui.prefs_lib_reminder.prefs_lib_reminder)
+
 
 def unregister():
     icons.previews_unregister()
+
+    bpy.types.USERPREF_PT_file_paths_asset_libraries.remove(ui.draw_prefs_reminder.prefs_lib_reminder)
 
     from bpy.utils import unregister_class
     for cls in reversed(classes):
