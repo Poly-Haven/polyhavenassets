@@ -1,0 +1,17 @@
+{
+    "editor.rulers": [
+        120
+    ],
+    "python.linting.pylintEnabled": false,
+    "python.linting.pycodestyleEnabled": false,
+    "python.linting.enabled": true,
+    "python.linting.pycodestyleArgs": [
+        "--max-line-length=120",
+        "--ignore=W293,E701,E221,E402"
+    ],
+    "python.linting.flake8Enabled": true,
+    "files.exclude": {
+        "**/__pycache__": true,
+        ".idea": true
+    }
+}
