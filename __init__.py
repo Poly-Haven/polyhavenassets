@@ -23,7 +23,15 @@ bl_info = {
     "category": "Import-Export",
 }
 
-classes = ui.classes + operators.classes
+
+class PHAPreferences(bpy.types.AddonPreferences):
+    bl_idname = __package__
+
+    def draw(self, context):
+        ui.prefs_lib_reminder.prefs_lib_reminder(self, context)
+
+
+classes = [PHAPreferences] + ui.classes + operators.classes
 
 
 def register():
@@ -39,7 +47,7 @@ def register():
 def unregister():
     icons.previews_unregister()
 
-    bpy.types.USERPREF_PT_file_paths_asset_libraries.remove(ui.draw_prefs_reminder.prefs_lib_reminder)
+    bpy.types.USERPREF_PT_file_paths_asset_libraries.remove(ui.prefs_lib_reminder.prefs_lib_reminder)
 
     from bpy.utils import unregister_class
     for cls in reversed(classes):
