@@ -1,6 +1,6 @@
 import bpy
 import json
-import os
+import subprocess
 import requests
 from pathlib import Path
 from ..utils.get_asset_lib import get_asset_lib
@@ -37,9 +37,16 @@ def download_asset(slug, info, lib_dir, info_fp):
     print("Downloading", slug)
     res = "1k"  # Download lowest resolution by default
     blend = info['files']['blend'][res]['blend']
-    download_file(blend['url'], lib_dir / slug / f"{slug}.blend")
+    blend_file = lib_dir / slug / f"{slug}.blend"
+    download_file(blend['url'], blend_file)
     for sub_path, incl in blend['include'].items():
         download_file(incl['url'], lib_dir / slug / sub_path)
+
+    # TODO download and assign thumbnail preview. bpy.ops.ed.lib_id_load_custom_preview may work but requires context
+    thumbnail_file = lib_dir / slug / "thumbnail.webp"
+    download_file(f"https://cdn.polyhaven.com/asset_img/thumbs/{slug}.png?width=256&height=256", thumbnail_file)
+
+    mark_asset(blend_file, slug, info, thumbnail_file)
 
     return (None, None)
 
@@ -59,6 +66,13 @@ def download_file(url, dest):
     return None
 
 
+def mark_asset(blend_file, slug, info, thumbnail_file):
+    script_path = Path(__file__).parents[1] / 'utils' / 'mark_asset.py'
+    out = subprocess.call([bpy.app.binary_path, '--background', blend_file, '--factory-startup',
+                           '--python', script_path, '--', slug, str(info['type']), thumbnail_file])
+    print("out", out)
+
+
 class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
     bl_idname = "pha.pull_from_polyhaven"
     bl_label = "Pull from Poly Haven"
@@ -69,7 +83,6 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
         return context.window_manager.invoke_confirm(self, event)
 
     def execute(self, context):
-
         asset_lib = get_asset_lib(context)
         if asset_lib is None:
             self.report({'ERROR'}, "First open Preferences > File Paths and create an asset library named \"Poly Haven\"")
