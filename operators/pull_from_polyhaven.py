@@ -7,7 +7,7 @@ from ..utils.get_asset_lib import get_asset_lib
 
 
 def get_asset_list():
-    url = "https://api.polyhaven.com/assets?t=textures"
+    url = "https://api.polyhaven.com/assets"
     res = requests.get(url)
 
     if res.status_code != 200:
@@ -79,8 +79,9 @@ def mark_asset(blend_file, slug, info, thumbnail_file):
 
 def make_hdr_blend(hdr_file, slug, info, thumbnail_file):
     script_path = Path(__file__).parents[1] / 'utils' / 'make_hdr_blend.py'
-    subprocess.call([bpy.app.binary_path, '--background', '--factory-startup',
-                     '--python', script_path, '--', hdr_file, slug, str(info['type']), thumbnail_file])
+    template_blend = Path(__file__).parents[1] / 'utils' / "hdri_template.blend"
+    subprocess.call([bpy.app.binary_path, '--background', template_blend, '--factory-startup',
+                     '--python', script_path, '--', hdr_file, slug, thumbnail_file])
 
 
 class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
@@ -107,6 +108,8 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
             return {'CANCELLED'}
 
         for slug, asset in assets.items():
+            if slug != 'abandoned_church':
+                continue
             update_asset(slug, asset, Path(asset_lib.path))
 
         self.report({'INFO'}, "Downloaded")
