@@ -2,6 +2,7 @@ import bpy
 import json
 import subprocess
 import requests
+from shutil import copy as copy_file
 from pathlib import Path
 from ..utils.get_asset_lib import get_asset_lib
 
@@ -72,16 +73,44 @@ def download_file(url, dest):
 
 
 def mark_asset(blend_file, slug, info, thumbnail_file):
-    script_path = Path(__file__).parents[1] / 'utils' / 'mark_asset.py'
-    subprocess.call([bpy.app.binary_path, '--background', blend_file, '--factory-startup',
-                     '--python', script_path, '--', slug, str(info['type']), thumbnail_file])
+    script_path = Path(__file__).parents[1] / 'utils' / 'make_blend.py'
+    subprocess.call([
+        bpy.app.binary_path,
+        '--background',
+        blend_file,
+        '--factory-startup',
+        '--python',
+        script_path,
+        '--',
+        slug,
+        str(info['type']),
+        thumbnail_file,
+        ', '.join(info['authors'].keys()),
+        ';'.join(info['categories']),
+        ';'.join(info['tags']),
+        "NONE"
+    ])
 
 
 def make_hdr_blend(hdr_file, slug, info, thumbnail_file):
-    script_path = Path(__file__).parents[1] / 'utils' / 'make_hdr_blend.py'
+    script_path = Path(__file__).parents[1] / 'utils' / 'make_blend.py'
     template_blend = Path(__file__).parents[1] / 'utils' / "hdri_template.blend"
-    subprocess.call([bpy.app.binary_path, '--background', template_blend, '--factory-startup',
-                     '--python', script_path, '--', hdr_file, slug, thumbnail_file])
+    subprocess.call([
+        bpy.app.binary_path,
+        '--background',
+        template_blend,
+        '--factory-startup',
+        '--python',
+        script_path,
+        '--',
+        slug,
+        "0",
+        thumbnail_file,
+        ', '.join(info['authors'].keys()),
+        ';'.join(info['categories']),
+        ';'.join(info['tags']),
+        hdr_file
+    ])
 
 
 class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
@@ -107,9 +136,13 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
             self.report({'ERROR'}, error)
             return {'CANCELLED'}
 
+        catalog_file = Path(asset_lib.path) / 'blender_assets.cats.txt'
+        if not catalog_file.exists():
+            catalog_file.parent.mkdir(parents=True, exist_ok=True)  # Juuuust in case the library folder was removed
+            default_catalog_file = Path(__file__).parents[1] / "blender_assets.cats.txt"
+            copy_file(default_catalog_file, catalog_file)
+
         for slug, asset in assets.items():
-            if slug != 'abandoned_church':
-                continue
             update_asset(slug, asset, Path(asset_lib.path))
 
         self.report({'INFO'}, "Downloaded")
