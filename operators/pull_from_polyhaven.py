@@ -7,7 +7,7 @@ from ..utils.get_asset_lib import get_asset_lib
 
 
 def get_asset_list():
-    url = "https://api.polyhaven.com/assets?t=models"
+    url = "https://api.polyhaven.com/assets?t=textures"
     res = requests.get(url)
 
     if res.status_code != 200:
@@ -36,17 +36,22 @@ def download_asset(slug, info, lib_dir, info_fp):
 
     print("Downloading", slug)
     res = "1k"  # Download lowest resolution by default
-    blend = info['files']['blend'][res]['blend']
-    blend_file = lib_dir / slug / f"{slug}.blend"
-    download_file(blend['url'], blend_file)
-    for sub_path, incl in blend['include'].items():
-        download_file(incl['url'], lib_dir / slug / sub_path)
 
-    # TODO download and assign thumbnail preview. bpy.ops.ed.lib_id_load_custom_preview may work but requires context
     thumbnail_file = lib_dir / slug / "thumbnail.webp"
     download_file(f"https://cdn.polyhaven.com/asset_img/thumbs/{slug}.png?width=256&height=256", thumbnail_file)
 
-    mark_asset(blend_file, slug, info, thumbnail_file)
+    if info['type'] > 0:  # Textures and models
+        blend = info['files']['blend'][res]['blend']
+        blend_file = lib_dir / slug / f"{slug}.blend"
+        download_file(blend['url'], blend_file)
+        for sub_path, incl in blend['include'].items():
+            download_file(incl['url'], lib_dir / slug / sub_path)
+        mark_asset(blend_file, slug, info, thumbnail_file)
+    else:  # HDRIs
+        url = info['files']['hdri'][res]['hdr']['url']
+        hdr_file = lib_dir / slug / Path(url).name
+        download_file(url, hdr_file)
+        make_hdr_blend(hdr_file, slug, info, thumbnail_file)
 
     return (None, None)
 
@@ -68,9 +73,14 @@ def download_file(url, dest):
 
 def mark_asset(blend_file, slug, info, thumbnail_file):
     script_path = Path(__file__).parents[1] / 'utils' / 'mark_asset.py'
-    out = subprocess.call([bpy.app.binary_path, '--background', blend_file, '--factory-startup',
-                           '--python', script_path, '--', slug, str(info['type']), thumbnail_file])
-    print("out", out)
+    subprocess.call([bpy.app.binary_path, '--background', blend_file, '--factory-startup',
+                     '--python', script_path, '--', slug, str(info['type']), thumbnail_file])
+
+
+def make_hdr_blend(hdr_file, slug, info, thumbnail_file):
+    script_path = Path(__file__).parents[1] / 'utils' / 'make_hdr_blend.py'
+    subprocess.call([bpy.app.binary_path, '--background', '--factory-startup',
+                     '--python', script_path, '--', hdr_file, slug, str(info['type']), thumbnail_file])
 
 
 class PHA_OT_pull_from_polyhaven(bpy.types.Operator):

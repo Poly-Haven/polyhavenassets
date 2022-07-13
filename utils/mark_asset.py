@@ -7,12 +7,14 @@ slug, asset_type, thumbnail_file = argv
 
 # Mark asset
 asset = None
-if asset_type == '0':  # HDRI
-    pass  # TODO
 if asset_type == '1':  # Texture
-    pass  # TODO
-if asset_type == '2':  # Model
+    asset = bpy.data.materials[slug]
+elif asset_type == '2':  # Model
     asset = bpy.data.collections[slug]
+else:
+    # Unsupported type
+    sys.exit()
+
 if asset:
     asset.asset_mark()
 
