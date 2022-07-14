@@ -5,6 +5,8 @@ import requests
 from shutil import copy as copy_file
 from pathlib import Path
 from ..utils.get_asset_lib import get_asset_lib
+from concurrent.futures import ThreadPoolExecutor
+from time import sleep
 
 
 def get_asset_list():
@@ -44,9 +46,15 @@ def download_asset(slug, info, lib_dir, info_fp):
     if info['type'] > 0:  # Textures and models
         blend = info['files']['blend'][res]['blend']
         blend_file = lib_dir / slug / f"{slug}.blend"
-        download_file(blend['url'], blend_file)
+        executor = ThreadPoolExecutor(max_workers=10)
+        threads = []
+        t = executor.submit(download_file, blend['url'], blend_file)
+        threads.append(t)
         for sub_path, incl in blend['include'].items():
-            download_file(incl['url'], lib_dir / slug / sub_path)
+            t = executor.submit(download_file, incl['url'], lib_dir / slug / sub_path)
+            threads.append(t)
+        while (any(t._state != "FINISHED" for t in threads)):
+            sleep(0.1)  # Block until all downloads are complete
         mark_asset(blend_file, slug, info, thumbnail_file)
     else:  # HDRIs
         url = info['files']['hdri'][res]['hdr']['url']
@@ -142,8 +150,11 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
             default_catalog_file = Path(__file__).parents[1] / "blender_assets.cats.txt"
             copy_file(default_catalog_file, catalog_file)
 
+        executor = ThreadPoolExecutor(max_workers=20)
+        threads = []
         for slug, asset in assets.items():
-            update_asset(slug, asset, Path(asset_lib.path))
+            t = executor.submit(update_asset, slug, asset, Path(asset_lib.path))
+            threads.append(t)
 
-        self.report({'INFO'}, "Downloaded")
+        self.report({'INFO'}, "Downloading in background...")
         return {'FINISHED'}
