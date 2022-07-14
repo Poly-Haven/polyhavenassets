@@ -34,8 +34,6 @@ def download_asset(slug, info, lib_dir, info_fp):
 
     info['files'] = res.json()
     info_fp.parent.mkdir(parents=True, exist_ok=True)
-    with info_fp.open('w') as f:
-        f.write(json.dumps(info, indent=4))
 
     print("Downloading", slug)
     res = "1k"  # Download lowest resolution by default
@@ -61,6 +59,9 @@ def download_asset(slug, info, lib_dir, info_fp):
         hdr_file = lib_dir / slug / Path(url).name
         download_file(url, hdr_file)
         make_hdr_blend(hdr_file, slug, info, thumbnail_file)
+
+    with info_fp.open('w') as f:
+        f.write(json.dumps(info, indent=4))
 
     return (None, None)
 
