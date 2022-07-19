@@ -4,12 +4,12 @@ from ..utils.get_asset_lib import get_asset_lib
 from ..icons import get_icons
 
 
-class PHA_PT_asset_model(bpy.types.Panel):
+class PHA_PT_asset_hdri(bpy.types.Panel):
 
     bl_label = " "
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
-    bl_context = "data"
+    bl_context = "world"
 
     asset_id = ""
 
@@ -17,7 +17,7 @@ class PHA_PT_asset_model(bpy.types.Panel):
     def poll(self, context):
         fp = None
         try:
-            fp = context.object.instance_collection.library_weak_reference.filepath
+            fp = context.world.library_weak_reference.filepath
             self.asset_id = Path(fp).stem
         except AttributeError:
             return False
