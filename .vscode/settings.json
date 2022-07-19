@@ -13,5 +13,6 @@
     "files.exclude": {
         "**/__pycache__": true,
         ".idea": true
-    }
+    },
+    "editor.tabSize": 4,
 }
