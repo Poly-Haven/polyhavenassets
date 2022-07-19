@@ -4,14 +4,15 @@ import subprocess
 import requests
 from shutil import copy as copy_file
 from pathlib import Path
-from ..utils.get_asset_lib import get_asset_lib
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
+from ..constants import REQ_HEADERS
+from ..utils.get_asset_lib import get_asset_lib
 
 
 def get_asset_list():
     url = "https://api.polyhaven.com/assets"
-    res = requests.get(url)
+    res = requests.get(url, headers=REQ_HEADERS)
 
     if res.status_code != 200:
         return (f"Error retrieving asset list, status code: {res.status_code}", None)
@@ -27,7 +28,7 @@ def update_asset(slug, info, lib_dir):
 
 def download_asset(slug, info, lib_dir, info_fp):
     url = f"https://api.polyhaven.com/files/{slug}"
-    res = requests.get(url)
+    res = requests.get(url, headers=REQ_HEADERS)
 
     if res.status_code != 200:
         return (f"Error retrieving file list for {slug}, status code: {res.status_code}", None)
@@ -69,7 +70,7 @@ def download_asset(slug, info, lib_dir, info_fp):
 def download_file(url, dest):
     print("Downloading", Path(url).name)
 
-    res = requests.get(url)
+    res = requests.get(url, headers=REQ_HEADERS)
     if res.status_code != 200:
         return f"Error retrieving {url}, status code: {res.status_code}"
 

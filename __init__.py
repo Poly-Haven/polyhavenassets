@@ -1,15 +1,3 @@
-if "bpy" not in locals():
-    from . import ui
-    from . import operators
-    from . import icons
-else:
-    import imp
-    imp.reload(ui)
-    imp.reload(operators)
-    imp.reload(icons)
-
-import bpy
-
 bl_info = {
     "name": "Poly Haven Assets",
     "description": "Dynamically adds all HDRIs, materials and 3D models from polyhaven.com into the Asset Browser",
@@ -22,6 +10,19 @@ bl_info = {
     "tracker_url": "https://github.com/Poly-Haven/polyhaven-assets/issues",
     "category": "Import-Export",
 }
+
+
+if "bpy" not in locals():
+    from . import ui
+    from . import operators
+    from . import icons
+else:
+    import imp
+    imp.reload(ui)
+    imp.reload(operators)
+    imp.reload(icons)
+
+import bpy
 
 
 class PHAPreferences(bpy.types.AddonPreferences):
