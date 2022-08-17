@@ -6,13 +6,17 @@ preview_collections = {}
 
 def previews_register():
     import bpy.utils.previews
-    icons_dir = os.path.join(os.path.dirname(__file__), 'icons')
+
+    icons_dir = os.path.join(os.path.dirname(__file__), "icons")
     custom_icons = bpy.utils.previews.new()
     for f in os.listdir(icons_dir):
         if f.endswith(".png"):
-            custom_icons.load(os.path.splitext(os.path.basename(f))[
-                              0], os.path.join(icons_dir, f), 'IMAGE')
-    preview_collections['icons'] = custom_icons
+            custom_icons.load(
+                os.path.splitext(os.path.basename(f))[0],
+                os.path.join(icons_dir, f),
+                "IMAGE",
+            )
+    preview_collections["icons"] = custom_icons
 
 
 def previews_unregister():
@@ -22,4 +26,4 @@ def previews_unregister():
 
 
 def get_icons():
-    return preview_collections['icons']
+    return preview_collections["icons"]

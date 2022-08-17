@@ -2,12 +2,18 @@
     "editor.rulers": [
         120
     ],
+    "editor.formatOnSave": true,
     "python.linting.pylintEnabled": false,
     "python.linting.pycodestyleEnabled": false,
     "python.linting.enabled": true,
-    "python.linting.pycodestyleArgs": [
+    "python.linting.flake8Args": [
         "--max-line-length=120",
         "--ignore=W293,E701,E221,E402"
+    ],
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": [
+        "--line-length",
+        "120"
     ],
     "python.linting.flake8Enabled": true,
     "files.exclude": {

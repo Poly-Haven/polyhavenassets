@@ -18,6 +18,7 @@ if "bpy" not in locals():
     from . import icons
 else:
     import imp
+
     imp.reload(ui)
     imp.reload(operators)
     imp.reload(icons)
@@ -39,6 +40,7 @@ def register():
     icons.previews_register()
 
     from bpy.utils import register_class
+
     for cls in classes:
         register_class(cls)
 
@@ -53,6 +55,7 @@ def unregister():
     bpy.types.ASSETBROWSER_PT_metadata.remove(ui.asset_lib_support.panel)
 
     from bpy.utils import unregister_class
+
     for cls in reversed(classes):
         unregister_class(cls)
 

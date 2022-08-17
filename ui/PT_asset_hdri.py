@@ -34,7 +34,9 @@ class PHA_PT_asset_hdri(bpy.types.Panel):
 
     def draw_header(self, context):
         icons = get_icons()
-        self.layout.label(text=f"Asset: {self.asset_id}", icon_value=icons['polyhaven'].icon_id)
+        self.layout.label(
+            text=f"Asset: {self.asset_id}", icon_value=icons["polyhaven"].icon_id
+        )
 
     def draw(self, context):
         layout = self.layout

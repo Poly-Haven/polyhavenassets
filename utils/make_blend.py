@@ -18,14 +18,14 @@ def get_catalog_id(asset_type: str, categories):
         line = line.strip()
         if not line:
             continue  # Empty lines
-        if line.startswith('#'):
+        if line.startswith("#"):
             continue
-        if line.startswith('VERSION'):
+        if line.startswith("VERSION"):
             continue
 
-        parts = line.split(':')
+        parts = line.split(":")
         uuid, path = parts[:2]
-        crumbs = path.split('/')
+        crumbs = path.split("/")
 
         cat_type = crumbs[0]  # Either HDRIs, Textures or Models
         if TYPES[asset_type] != cat_type:
@@ -51,23 +51,23 @@ def get_catalog_id(asset_type: str, categories):
 
 
 argv = sys.argv
-argv = argv[argv.index("--") + 1:]  # get all args after "--"
+argv = argv[argv.index("--") + 1 :]  # get all args after "--"
 slug, asset_type, thumbnail_file, authors, categories, tags, hdr_file = argv
 
 # Mark asset
 asset = None
-if asset_type == '0':  # HDRI
+if asset_type == "0":  # HDRI
     asset = bpy.context.scene.world
     asset.name = slug
-    group = bpy.data.node_groups['PH_HDRI_TEMPLATE']
+    group = bpy.data.node_groups["PH_HDRI_TEMPLATE"]
     group.name = slug
     img = bpy.data.images.load(hdr_file, check_existing=True)
     for n in group.nodes:
-        if n.type == 'TEX_ENVIRONMENT':
+        if n.type == "TEX_ENVIRONMENT":
             n.image = img
-elif asset_type == '1':  # Texture
+elif asset_type == "1":  # Texture
     asset = bpy.data.materials[slug]
-elif asset_type == '2':  # Model
+elif asset_type == "2":  # Model
     asset = bpy.data.collections[slug]
 else:
     # Unsupported type
@@ -84,15 +84,15 @@ with bpy.context.temp_override(**override):
 
 
 # Set catalogs
-cat_id = get_catalog_id(asset_type, categories.split(';'))
+cat_id = get_catalog_id(asset_type, categories.split(";"))
 if cat_id:
     asset.asset_data.catalog_id = cat_id
 # Since an asset can only be in a single catalog, set each category as a tag too.
-for c in categories.split(';'):
+for c in categories.split(";"):
     asset.asset_data.tags.new(c, skip_if_exists=True)
 
 # Set tags
-for t in tags.split(';'):
+for t in tags.split(";"):
     asset.asset_data.tags.new(t, skip_if_exists=True)
 
 # Set author, description
@@ -101,7 +101,7 @@ asset.asset_data.description = f"A CC0 {TYPES[asset_type][:-1]} by polyhaven.com
 
 # Save file
 bpy.context.preferences.filepaths.save_version = 0  # Avoid .blend1
-if asset_type == '0':
+if asset_type == "0":
     out_file = Path(hdr_file).parent / f"{slug}.blend"
     bpy.ops.wm.save_as_mainfile(
         filepath=str(out_file),
