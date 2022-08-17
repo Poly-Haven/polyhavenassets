@@ -1,4 +1,5 @@
 import bpy
+import logging
 import json
 import subprocess
 import requests
@@ -8,6 +9,8 @@ from concurrent.futures import ThreadPoolExecutor
 from time import sleep
 from ..constants import REQ_HEADERS
 from ..utils.get_asset_lib import get_asset_lib
+
+log = logging.getLogger(__name__)
 
 
 def get_asset_list():
@@ -31,15 +34,14 @@ def download_asset(slug, info, lib_dir, info_fp):
     res = requests.get(url, headers=REQ_HEADERS)
 
     if res.status_code != 200:
-        return (
-            f"Error retrieving file list for {slug}, status code: {res.status_code}",
-            None,
-        )
+        msg = f"Error retrieving file list for {slug}, status code: {res.status_code}"
+        log.error(msg)
+        return (msg, None)
 
     info["files"] = res.json()
     info_fp.parent.mkdir(parents=True, exist_ok=True)
 
-    print("Downloading", slug)
+    log.info(f"Downloading {slug}")
     res = "1k"  # Download lowest resolution by default
 
     thumbnail_file = lib_dir / slug / "thumbnail.webp"
@@ -74,11 +76,13 @@ def download_asset(slug, info, lib_dir, info_fp):
 
 
 def download_file(url, dest):
-    print("Downloading", Path(url).name)
+    log.info(f"Downloading {Path(url).name}")
 
     res = requests.get(url, headers=REQ_HEADERS)
     if res.status_code != 200:
-        return f"Error retrieving {url}, status code: {res.status_code}"
+        msg = f"Error retrieving {url}, status code: {res.status_code}"
+        log.error(msg)
+        return msg
 
     dest.parent.mkdir(parents=True, exist_ok=True)
 
