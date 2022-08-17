@@ -45,14 +45,16 @@ def register():
         register_class(cls)
 
     bpy.types.USERPREF_PT_file_paths_asset_libraries.append(ui.prefs_lib_reminder.prefs_lib_reminder)
-    bpy.types.ASSETBROWSER_PT_metadata.append(ui.asset_lib_support.panel)
+    bpy.types.ASSETBROWSER_PT_metadata.append(ui.asset_lib_support.ui)
+    bpy.types.ASSETBROWSER_MT_editor_menus.append(ui.asset_lib_titlebar.ui)
 
 
 def unregister():
     icons.previews_unregister()
 
     bpy.types.USERPREF_PT_file_paths_asset_libraries.remove(ui.prefs_lib_reminder.prefs_lib_reminder)
-    bpy.types.ASSETBROWSER_PT_metadata.remove(ui.asset_lib_support.panel)
+    bpy.types.ASSETBROWSER_PT_metadata.remove(ui.asset_lib_support.ui)
+    bpy.types.ASSETBROWSER_MT_editor_menus.remove(ui.asset_lib_titlebar.ui)
 
     from bpy.utils import unregister_class
 

@@ -10,6 +10,4 @@ def ui(self, context):
     row = layout.row()
     row.alignment = "RIGHT"
     i = icons.get_icons()
-    row.operator(
-        "wm.url_open", text="Support us!", icon_value=i["polyhaven"].icon_id
-    ).url = "https://www.patreon.com/polyhaven/overview"
+    row.operator("pha.pull_from_polyhaven", text="Fetch Assets", icon_value=i["polyhaven"].icon_id)

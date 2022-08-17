@@ -139,7 +139,7 @@ def make_hdr_blend(hdr_file, slug, info, thumbnail_file):
 
 class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
     bl_idname = "pha.pull_from_polyhaven"
-    bl_label = "Pull from Poly Haven"
+    bl_label = "Fetch assets from polyhaven.com"
     bl_description = "Updates the local asset library with new assets from polyhaven.com"
     bl_options = {"REGISTER", "UNDO"}
 

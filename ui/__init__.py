@@ -3,6 +3,7 @@ import imp
 from . import PT_main
 from . import prefs_lib_reminder
 from . import asset_lib_support
+from . import asset_lib_titlebar
 from . import PT_asset_hdri
 from . import PT_asset_model
 from . import PT_asset_texture
@@ -10,6 +11,7 @@ from . import PT_asset_texture
 imp.reload(PT_main)
 imp.reload(prefs_lib_reminder)
 imp.reload(asset_lib_support)
+imp.reload(asset_lib_titlebar)
 imp.reload(PT_asset_hdri)
 imp.reload(PT_asset_model)
 imp.reload(PT_asset_texture)
