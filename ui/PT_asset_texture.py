@@ -41,4 +41,4 @@ class PHA_PT_asset_texture(bpy.types.Panel):
         layout = self.layout
 
         col = layout.column()
-        col.label(text="Test!")
+        col.operator("pha.tex_scale_fix")
