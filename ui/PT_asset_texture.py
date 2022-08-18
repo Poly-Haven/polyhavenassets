@@ -21,6 +21,7 @@ class PHA_PT_asset_texture:
 
         col = layout.column()
         col.operator("pha.tex_scale_fix")
+        col.operator("pha.tex_displacement_setup")
 
 
 class PHA_PT_asset_texture_eevee(bpy.types.Panel, PHA_PT_asset_texture):

@@ -2,6 +2,8 @@ import bpy
 import logging
 import math
 import numpy
+from ..utils.is_ph_asset import is_ph_asset
+from ..utils.tex_users import tex_users
 from ..utils import mesh_helpers
 
 log = logging.getLogger(__name__)
@@ -16,16 +18,13 @@ class PHA_OT_tex_scale_fix(bpy.types.Operator):
     )
     bl_options = {"REGISTER", "UNDO"}
 
-    def execute(self, context):
-        objects = []
-        for obj in bpy.data.objects:
-            if obj.type == "MESH":
-                for mslot in obj.material_slots:
-                    if mslot.material == context.material:
-                        objects.append(obj)
-                        log.debug(f"{obj.name} uses {context.material.name}")
-                        break
+    @classmethod
+    def poll(self, context):
+        self.asset_id = is_ph_asset(context, context.material)
+        return bool(self.asset_id)
 
+    def execute(self, context):
+        objects = tex_users(context)
         areas = []
         for obj in set(objects):
             bm = mesh_helpers.bmesh_copy_from_object(obj, apply_modifiers=True)
