@@ -1,10 +1,6 @@
 import bpy
-import logging
-from pathlib import Path
-from ..utils.get_asset_lib import get_asset_lib
+from ..utils.is_ph_asset import is_ph_asset
 from ..icons import get_icons
-
-log = logging.getLogger(__name__)
 
 
 class PHA_PT_asset_texture:
@@ -13,22 +9,8 @@ class PHA_PT_asset_texture:
 
     @classmethod
     def poll(self, context):
-        fp = None
-        try:
-            fp = context.material.library_weak_reference.filepath
-            self.asset_id = Path(fp).stem
-        except AttributeError:
-            return False
-
-        lib = get_asset_lib(context)
-        if not lib:
-            return False
-
-        if Path(lib.path) not in Path(fp).parents:
-            # Is not in the PH asset lib
-            return False
-
-        return True
+        self.asset_id = is_ph_asset(context, context.material)
+        return bool(self.asset_id)
 
     def draw_header(self, context):
         icons = get_icons()
