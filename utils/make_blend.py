@@ -66,7 +66,14 @@ if asset_type == "0":  # HDRI
         if n.type == "TEX_ENVIRONMENT":
             n.image = img
 elif asset_type == "1":  # Texture
-    asset = bpy.data.materials[slug]
+    try:
+        asset = bpy.data.materials[slug]
+    except KeyError as e:
+        if len(bpy.data.materials) == 1:
+            asset = bpy.data.materials[0]
+            asset.name = slug
+        else:
+            raise e
     if dimensions != "NONE":
         asset["Real Scale (mm)"] = list(float(x) for x in dimensions.split(";"))
 elif asset_type == "2":  # Model
