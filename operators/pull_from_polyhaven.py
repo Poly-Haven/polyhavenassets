@@ -109,6 +109,7 @@ def mark_asset(blend_file, slug, info, thumbnail_file):
             ", ".join(info["authors"].keys()),
             ";".join(info["categories"]),
             ";".join(info["tags"]),
+            ";".join(str(x) for x in info["dimensions"]) if info["dimensions"] else "NONE",
             "NONE",
         ]
     )
@@ -132,6 +133,7 @@ def make_hdr_blend(hdr_file, slug, info, thumbnail_file):
             ", ".join(info["authors"].keys()),
             ";".join(info["categories"]),
             ";".join(info["tags"]),
+            "NONE",
             hdr_file,
         ]
     )

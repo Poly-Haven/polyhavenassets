@@ -52,7 +52,7 @@ def get_catalog_id(asset_type: str, categories):
 
 argv = sys.argv
 argv = argv[argv.index("--") + 1 :]  # get all args after "--"
-slug, asset_type, thumbnail_file, authors, categories, tags, hdr_file = argv
+slug, asset_type, thumbnail_file, authors, categories, tags, dimensions, hdr_file = argv
 
 # Mark asset
 asset = None
@@ -67,6 +67,8 @@ if asset_type == "0":  # HDRI
             n.image = img
 elif asset_type == "1":  # Texture
     asset = bpy.data.materials[slug]
+    if dimensions != "NONE":
+        asset["Real Scale (mm)"] = list(float(x) for x in dimensions.split(";"))
 elif asset_type == "2":  # Model
     asset = bpy.data.collections[slug]
 else:

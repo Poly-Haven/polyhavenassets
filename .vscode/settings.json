@@ -8,7 +8,7 @@
     "python.linting.enabled": true,
     "python.linting.flake8Args": [
         "--max-line-length=120",
-        "--ignore=W293,E701,E221,E402"
+        "--ignore=W293,E701,E221,E402,E203"
     ],
     "python.formatting.provider": "black",
     "python.formatting.blackArgs": [
