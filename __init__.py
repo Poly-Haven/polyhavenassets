@@ -26,6 +26,15 @@ else:
 import bpy
 
 
+class PHAProperties(bpy.types.PropertyGroup):
+    progress_total: bpy.props.FloatProperty(default=0, options={"HIDDEN"})  # noqa: F821
+    progress_percent: bpy.props.IntProperty(
+        default=0, min=0, max=100, step=1, subtype="PERCENTAGE", options={"HIDDEN"}  # noqa: F821
+    )
+    progress_word: bpy.props.StringProperty(options={"HIDDEN"})  # noqa: F821
+    progress_details: bpy.props.StringProperty(options={"HIDDEN"})  # noqa: F821
+
+
 class PHAPreferences(bpy.types.AddonPreferences):
     bl_idname = __package__
 
@@ -33,7 +42,7 @@ class PHAPreferences(bpy.types.AddonPreferences):
         ui.prefs_lib_reminder.prefs_lib_reminder(self, context)
 
 
-classes = [PHAPreferences] + ui.classes + operators.classes
+classes = [PHAProperties, PHAPreferences] + ui.classes + operators.classes
 
 
 def register():
@@ -47,11 +56,15 @@ def register():
     bpy.types.USERPREF_PT_file_paths_asset_libraries.append(ui.prefs_lib_reminder.prefs_lib_reminder)
     bpy.types.ASSETBROWSER_PT_metadata.append(ui.asset_lib_support.ui)
     bpy.types.ASSETBROWSER_MT_editor_menus.append(ui.asset_lib_titlebar.ui)
-    bpy.types.STATUSBAR_HT_header.append(ui.statusbar.ui)
+    bpy.types.STATUSBAR_HT_header.prepend(ui.statusbar.ui)
+
+    bpy.types.WindowManager.pha_props = bpy.props.PointerProperty(type=PHAProperties)
 
 
 def unregister():
     icons.previews_unregister()
+
+    del bpy.types.WindowManager.pha_props
 
     bpy.types.USERPREF_PT_file_paths_asset_libraries.remove(ui.prefs_lib_reminder.prefs_lib_reminder)
     bpy.types.ASSETBROWSER_PT_metadata.remove(ui.asset_lib_support.ui)

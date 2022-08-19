@@ -1,20 +1,21 @@
 import bpy
-import logging
 import json
-import subprocess
+import logging
 import requests
+import subprocess
 from shutil import copy as copy_file
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
 from ..constants import REQ_HEADERS
 from ..utils.get_asset_lib import get_asset_lib
+from ..utils import progress
 
 log = logging.getLogger(__name__)
 
 
 def get_asset_list():
-    url = "https://api.polyhaven.com/assets"
+    url = "https://api.polyhaven.com/assets?t=models"
     res = requests.get(url, headers=REQ_HEADERS)
 
     if res.status_code != 200:
@@ -23,10 +24,12 @@ def get_asset_list():
     return (None, res.json())
 
 
-def update_asset(slug, info, lib_dir):
+def update_asset(context, slug, info, lib_dir):
     info_fp = lib_dir / slug / "info.json"
     if not info_fp.exists():
         download_asset(slug, info, lib_dir, info_fp)
+        return slug
+    return None
 
 
 def download_asset(slug, info, lib_dir, info_fp):
@@ -109,7 +112,7 @@ def mark_asset(blend_file, slug, info, thumbnail_file):
             ", ".join(info["authors"].keys()),
             ";".join(info["categories"]),
             ";".join(info["tags"]),
-            ";".join(str(x) for x in info["dimensions"]) if info["dimensions"] else "NONE",
+            ";".join(str(x) for x in info["dimensions"]) if "dimensions" in info else "NONE",
             "NONE",
         ]
     )
@@ -145,10 +148,60 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
     bl_description = "Updates the local asset library with new assets from polyhaven.com"
     bl_options = {"REGISTER", "UNDO"}
 
+    prog = 0
+    prog_text = None
+    num_downloaded = 0
+    _timer = None
+    th = None
+
     def invoke(self, context, event):
         return context.window_manager.invoke_confirm(self, event)
 
+    def modal(self, context, event):
+        if event.type == "TIMER":
+            progress.update(context, self.prog, self.prog_text)
+
+            if not self.th.is_alive():
+                log.debug("FINISHED ALL THREADS")
+                progress.end(context)
+                self.th.join()
+                self.report(
+                    {"INFO"}, f"Downloaded {self.num_downloaded} asset{'s' if self.num_downloaded != 1 else ''}"
+                )
+                try:
+                    bpy.ops.asset.library_refresh()
+                except RuntimeError:
+                    # Context has changed
+                    pass
+                return {"FINISHED"}
+
+        return {"PASS_THROUGH"}
+
     def execute(self, context):
+        import threading
+
+        def long_task(self, assets, asset_lib):
+            executor = ThreadPoolExecutor(max_workers=20)
+            progress.init(context, len(assets), word="Downloading")
+            threads = []
+            for slug, asset in assets.items():
+                t = executor.submit(update_asset, context, slug, asset, Path(asset_lib.path))
+                threads.append(t)
+
+            finished_threads = []
+            while True:
+                for tt in threads:
+                    if tt._state == "FINISHED":
+                        if tt not in finished_threads:
+                            finished_threads.append(tt)
+                            self.prog += 1
+                            if tt.result() is not None:
+                                self.num_downloaded += 1
+                                self.prog_text = f"Downloaded {tt.result()}"
+                if all(t._state == "FINISHED" for t in threads):
+                    break
+                sleep(0.5)
+
         asset_lib = get_asset_lib(context)
         if asset_lib is None:
             self.report(
@@ -174,11 +227,13 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
             default_catalog_file = Path(__file__).parents[1] / "blender_assets.cats.txt"
             copy_file(default_catalog_file, catalog_file)
 
-        executor = ThreadPoolExecutor(max_workers=20)
-        threads = []
-        for slug, asset in assets.items():
-            t = executor.submit(update_asset, slug, asset, Path(asset_lib.path))
-            threads.append(t)
+        self.th = threading.Thread(target=long_task, args=(self, assets, asset_lib))
+
+        self.th.start()
 
         self.report({"INFO"}, "Downloading in background...")
-        return {"FINISHED"}
+
+        wm = context.window_manager
+        self._timer = wm.event_timer_add(0.1, window=context.window)
+        wm.modal_handler_add(self)
+        return {"RUNNING_MODAL"}

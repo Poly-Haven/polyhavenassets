@@ -8,4 +8,4 @@ DATA_DIR = os.path.join(
     "polyhaven",
 )
 REQ_HEADERS = requests.utils.default_headers()
-REQ_HEADERS.update({"User-Agent": f"Blender: PH Assets"})
+REQ_HEADERS.update({"User-Agent": "Blender: PH Assets"})
