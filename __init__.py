@@ -24,6 +24,9 @@ else:
     imp.reload(icons)
 
 import bpy
+import threading
+from bpy.app.handlers import persistent
+from .utils.check_for_new_assets import check_for_new_assets
 
 
 class PHAProperties(bpy.types.PropertyGroup):
@@ -32,7 +35,7 @@ class PHAProperties(bpy.types.PropertyGroup):
         default=0, min=0, max=100, step=1, subtype="PERCENTAGE", options={"HIDDEN"}  # noqa: F821
     )
     progress_word: bpy.props.StringProperty(options={"HIDDEN"})  # noqa: F821
-    progress_details: bpy.props.StringProperty(options={"HIDDEN"})  # noqa: F821
+    new_assets: bpy.props.IntProperty(default=0, options={"HIDDEN"})  # noqa: F821
 
 
 class PHAPreferences(bpy.types.AddonPreferences):
@@ -43,6 +46,11 @@ class PHAPreferences(bpy.types.AddonPreferences):
 
 
 classes = [PHAProperties, PHAPreferences] + ui.classes + operators.classes
+
+
+@persistent
+def handler(dummy):
+    threading.Thread(target=check_for_new_assets, args=(bpy.context,)).start()
 
 
 def register():
@@ -59,11 +67,15 @@ def register():
     bpy.types.STATUSBAR_HT_header.prepend(ui.statusbar.ui)
 
     bpy.types.WindowManager.pha_props = bpy.props.PointerProperty(type=PHAProperties)
+    bpy.app.handlers.load_post.append(handler)
+    bpy.app.handlers.save_post.append(handler)
 
 
 def unregister():
     icons.previews_unregister()
 
+    bpy.app.handlers.load_post.remove(handler)
+    bpy.app.handlers.save_post.remove(handler)
     del bpy.types.WindowManager.pha_props
 
     bpy.types.USERPREF_PT_file_paths_asset_libraries.remove(ui.prefs_lib_reminder.prefs_lib_reminder)

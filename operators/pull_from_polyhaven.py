@@ -9,19 +9,10 @@ from concurrent.futures import ThreadPoolExecutor
 from time import sleep
 from ..constants import REQ_HEADERS
 from ..utils.get_asset_lib import get_asset_lib
+from ..utils.get_asset_list import get_asset_list
 from ..utils import progress
 
 log = logging.getLogger(__name__)
-
-
-def get_asset_list():
-    url = "https://api.polyhaven.com/assets"
-    res = requests.get(url, headers=REQ_HEADERS)
-
-    if res.status_code != 200:
-        return (f"Error retrieving asset list, status code: {res.status_code}", None)
-
-    return (None, res.json())
 
 
 def update_asset(context, slug, info, lib_dir):
@@ -236,6 +227,8 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
         self.th.start()
 
         self.report({"INFO"}, "Downloading in background...")
+
+        context.window_manager.pha_props.new_assets = 0
 
         wm = context.window_manager
         self._timer = wm.event_timer_add(0.1, window=context.window)
