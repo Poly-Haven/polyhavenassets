@@ -8,6 +8,7 @@ from . import statusbar
 from . import PT_asset_hdri
 from . import PT_asset_model
 from . import PT_asset_texture
+from . import MT_resolution_switch
 
 imp.reload(PT_main)
 imp.reload(prefs_lib_reminder)
@@ -17,6 +18,7 @@ imp.reload(statusbar)
 imp.reload(PT_asset_hdri)
 imp.reload(PT_asset_model)
 imp.reload(PT_asset_texture)
+imp.reload(MT_resolution_switch)
 
 classes = [
     PT_main.PHA_PT_main,
@@ -24,4 +26,5 @@ classes = [
     PT_asset_model.PHA_PT_asset_model,
     PT_asset_texture.PHA_PT_asset_texture_eevee,
     PT_asset_texture.PHA_PT_asset_texture_cycles,
+    MT_resolution_switch.PHA_MT_resolution_switch,
 ]

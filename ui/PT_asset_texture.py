@@ -4,7 +4,11 @@ from ..icons import get_icons
 
 
 class PHA_PT_asset_texture:
-
+    bl_label = " "
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "material"
+    bl_options = {"HEADER_LAYOUT_EXPAND", "DEFAULT_CLOSED"}
     asset_id = ""
 
     @classmethod
@@ -14,7 +18,15 @@ class PHA_PT_asset_texture:
 
     def draw_header(self, context):
         icons = get_icons()
-        self.layout.label(text=f"Asset: {self.asset_id}", icon_value=icons["polyhaven"].icon_id)
+        row = self.layout.row()
+        row.label(text=f"Asset: {self.asset_id}", icon_value=icons["polyhaven"].icon_id)
+        sub = row.row(align=True)
+        sub.alignment = "RIGHT"
+        sub.menu(
+            "PHA_MT_resolution_switch",
+            text=(context.material["res"] if "res" in context.material else "1k").upper(),
+        )
+        row.separator()
 
     def draw(self, context):
         layout = self.layout
@@ -25,16 +37,8 @@ class PHA_PT_asset_texture:
 
 
 class PHA_PT_asset_texture_eevee(bpy.types.Panel, PHA_PT_asset_texture):
-    bl_label = " "
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "material"
     bl_parent_id = "EEVEE_MATERIAL_PT_context_material"
 
 
 class PHA_PT_asset_texture_cycles(bpy.types.Panel, PHA_PT_asset_texture):
-    bl_label = " "
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "material"
     bl_parent_id = "CYCLES_PT_context_material"
