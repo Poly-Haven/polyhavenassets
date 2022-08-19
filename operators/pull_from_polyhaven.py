@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 
 
 def get_asset_list():
-    url = "https://api.polyhaven.com/assets?t=models"
+    url = "https://api.polyhaven.com/assets"
     res = requests.get(url, headers=REQ_HEADERS)
 
     if res.status_code != 200:
