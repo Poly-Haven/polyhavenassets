@@ -154,6 +154,10 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
     _timer = None
     th = None
 
+    @classmethod
+    def poll(self, context):
+        return context.window_manager.pha_props.progress_total == 0
+
     def invoke(self, context, event):
         return context.window_manager.invoke_confirm(self, event)
 
