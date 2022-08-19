@@ -8,6 +8,7 @@ from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
 from ..constants import REQ_HEADERS
+from ..utils.download_file import download_file
 from ..utils.get_asset_lib import get_asset_lib
 from ..utils.get_asset_list import get_asset_list
 from ..utils import progress
@@ -67,23 +68,6 @@ def download_asset(slug, info, lib_dir, info_fp):
         f.write(json.dumps(info, indent=4))
 
     return (None, None)
-
-
-def download_file(url, dest):
-    log.info(f"Downloading {Path(url).name}")
-
-    res = requests.get(url, headers=REQ_HEADERS)
-    if res.status_code != 200:
-        msg = f"Error retrieving {url}, status code: {res.status_code}"
-        log.error(msg)
-        return msg
-
-    dest.parent.mkdir(parents=True, exist_ok=True)
-
-    with dest.open("wb") as f:
-        f.write(res.content)
-
-    return None
 
 
 def mark_asset(blend_file, slug, info, thumbnail_file):
