@@ -2,6 +2,7 @@ import bpy
 from ..utils.is_ph_asset import is_ph_asset
 from ..icons import get_icons
 from ..ui import statusbar
+from ..ui import asset_info_box
 
 
 class PHA_PT_asset_model(bpy.types.Panel):
@@ -32,10 +33,10 @@ class PHA_PT_asset_model(bpy.types.Panel):
                 "PHA_MT_resolution_switch_model",
                 text=(context.object["res"] if "res" in context.object else "1k").upper(),
             )
-        row.separator()  # Space at end
+            row.separator()  # Space at end
 
     def draw(self, context):
         layout = self.layout
 
         col = layout.column()
-        col.label(text="Test!")
+        asset_info_box.draw(self, context, col, self.asset_id)

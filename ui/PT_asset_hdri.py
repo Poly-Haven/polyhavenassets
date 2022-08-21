@@ -2,6 +2,7 @@ import bpy
 from ..utils.is_ph_asset import is_ph_asset
 from ..icons import get_icons
 from ..ui import statusbar
+from ..ui import asset_info_box
 
 
 class PHA_PT_asset_hdri(bpy.types.Panel):
@@ -38,4 +39,4 @@ class PHA_PT_asset_hdri(bpy.types.Panel):
         layout = self.layout
 
         col = layout.column()
-        col.label(text="Test!")
+        asset_info_box.draw(self, context, col, self.asset_id)

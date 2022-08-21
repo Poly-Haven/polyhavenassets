@@ -2,6 +2,7 @@ import bpy
 from ..utils.is_ph_asset import is_ph_asset
 from ..icons import get_icons
 from ..ui import statusbar
+from ..ui import asset_info_box
 
 
 class PHA_PT_asset_texture:
@@ -31,14 +32,16 @@ class PHA_PT_asset_texture:
                 "PHA_MT_resolution_switch_texture",
                 text=(context.material["res"] if "res" in context.material else "1k").upper(),
             )
-        row.separator()  # Space at end
+            row.separator()  # Space at end
 
     def draw(self, context):
         layout = self.layout
 
         col = layout.column()
-        col.operator("pha.tex_scale_fix")
-        col.operator("pha.tex_displacement_setup")
+        row = col.row()
+        row.operator("pha.tex_scale_fix", icon="CON_SIZELIMIT")
+        row.operator("pha.tex_displacement_setup", icon="BRUSH_FILL")
+        asset_info_box.draw(self, context, col, self.asset_id)
 
 
 class PHA_PT_asset_texture_eevee(bpy.types.Panel, PHA_PT_asset_texture):

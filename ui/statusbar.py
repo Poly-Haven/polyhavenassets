@@ -13,4 +13,4 @@ def ui(self, context, statusbar=True):
             icons = get_icons()
             self.layout.label(text="", icon_value=icons["polyhaven"].icon_id)
         else:
-            self.layout.separator()
+            self.layout.separator()  # Space at end
