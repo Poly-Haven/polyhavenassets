@@ -26,5 +26,7 @@ classes = [
     PT_asset_model.PHA_PT_asset_model,
     PT_asset_texture.PHA_PT_asset_texture_eevee,
     PT_asset_texture.PHA_PT_asset_texture_cycles,
-    MT_resolution_switch.PHA_MT_resolution_switch,
+    MT_resolution_switch.PHA_MT_resolution_switch_hdri,
+    MT_resolution_switch.PHA_MT_resolution_switch_texture,
+    MT_resolution_switch.PHA_MT_resolution_switch_model,
 ]

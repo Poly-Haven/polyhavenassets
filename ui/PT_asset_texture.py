@@ -9,6 +9,7 @@ class PHA_PT_asset_texture:
     bl_region_type = "WINDOW"
     bl_context = "material"
     bl_options = {"HEADER_LAYOUT_EXPAND", "DEFAULT_CLOSED"}
+
     asset_id = ""
 
     @classmethod
@@ -23,10 +24,10 @@ class PHA_PT_asset_texture:
         sub = row.row(align=True)
         sub.alignment = "RIGHT"
         sub.menu(
-            "PHA_MT_resolution_switch",
+            "PHA_MT_resolution_switch_texture",
             text=(context.material["res"] if "res" in context.material else "1k").upper(),
         )
-        row.separator()
+        row.separator()  # Space at end
 
     def draw(self, context):
         layout = self.layout
