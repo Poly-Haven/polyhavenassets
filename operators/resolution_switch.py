@@ -40,12 +40,20 @@ def get_images_in_tree(tree):
             yield from get_images_in_tree(node.node_tree)
 
 
-def update_image(img, asset_id, res, lib_path, info):
+def update_image(img, asset_id, res, lib_path, info, dry_run=False):
+    """
+    Update image with new resolution.
+    If dry_run is True, return a boolean indicating whether the image exists.
+    """
     rel_path = Path(bpy.path.abspath(img.filepath)).relative_to(lib_path / asset_id).as_posix()
     new_path, file_info = get_matching_resolutions(info, res, rel_path)
     new_path = lib_path / asset_id / new_path
     if not new_path.exists():
+        if dry_run:
+            return False
         download_file(file_info["url"], new_path)
+    if dry_run:
+        return True
     img.filepath = str(new_path)
     return new_path.name
 
@@ -143,11 +151,18 @@ class PHA_OT_resolution_switch(bpy.types.Operator):
         for tree in trees:
             images += get_images_in_tree(tree)
 
-        self.th = threading.Thread(target=long_task, args=(self, images, lib_path))
+        images_exist = []
+        for img in images:
+            images_exist.append(update_image(img, self.asset_id, self.res, lib_path, info, dry_run=True))
 
-        self.th.start()
+        if all(images_exist):
+            update_image(img, self.asset_id, self.res, lib_path, info, dry_run=False)
+            return {"FINISHED"}
+        else:
+            self.th = threading.Thread(target=long_task, args=(self, images, lib_path))
+            self.th.start()
 
-        wm = context.window_manager
-        self._timer = wm.event_timer_add(0.1, window=context.window)
-        wm.modal_handler_add(self)
-        return {"RUNNING_MODAL"}
+            wm = context.window_manager
+            self._timer = wm.event_timer_add(0.1, window=context.window)
+            wm.modal_handler_add(self)
+            return {"RUNNING_MODAL"}

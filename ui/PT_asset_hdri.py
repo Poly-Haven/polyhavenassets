@@ -23,6 +23,7 @@ class PHA_PT_asset_hdri(bpy.types.Panel):
         row = self.layout.row()
         row.label(text=f"Asset: {self.asset_id}", icon_value=icons["polyhaven"].icon_id)
         sub = row.row(align=True)
+        sub.enabled = context.window_manager.pha_props.progress_total == 0
         sub.alignment = "RIGHT"
         sub.menu(
             "PHA_MT_resolution_switch_hdri",
