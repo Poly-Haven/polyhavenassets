@@ -2,9 +2,12 @@ import bpy
 import logging
 import os
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
+from time import sleep
 from ..utils.download_file import download_file
 from ..utils.get_asset_info import get_asset_info
 from ..utils.get_asset_lib import get_asset_lib
+from ..utils import progress
 
 log = logging.getLogger(__name__)
 
@@ -37,6 +40,16 @@ def get_images_in_tree(tree):
             yield from get_images_in_tree(node.node_tree)
 
 
+def update_image(img, asset_id, res, lib_path, info):
+    rel_path = Path(bpy.path.abspath(img.filepath)).relative_to(lib_path / asset_id).as_posix()
+    new_path, file_info = get_matching_resolutions(info, res, rel_path)
+    new_path = lib_path / asset_id / new_path
+    if not new_path.exists():
+        download_file(file_info["url"], new_path)
+    img.filepath = str(new_path)
+    return new_path.name
+
+
 class PHA_OT_resolution_switch(bpy.types.Operator):
     bl_idname = "pha.resolution_switch"
     bl_label = "Swap texture resolution"
@@ -46,11 +59,68 @@ class PHA_OT_resolution_switch(bpy.types.Operator):
     res: bpy.props.StringProperty()
     asset_id: bpy.props.StringProperty()
 
+    prog = 0
+    prog_text = None
+    num_downloaded = 0
+    _timer = None
+    th = None
+
     @classmethod
     def poll(self, context):
         return context.window_manager.pha_props.progress_total == 0
 
+    def modal(self, context, event):
+        if event.type == "TIMER":
+            progress.update(context, self.prog, self.prog_text)
+
+            if not self.th.is_alive():
+                log.debug("FINISHED ALL THREADS")
+                progress.end(context)
+                self.th.join()
+                return {"FINISHED"}
+
+        return {"PASS_THROUGH"}
+
     def execute(self, context):
+        import threading
+
+        def long_task(self, images, lib_path):
+            executor = ThreadPoolExecutor(max_workers=20)
+            progress.init(context, len(images), word="Downloading")
+            threads = []
+
+            for img in images:
+                t = executor.submit(update_image, img, self.asset_id, self.res, lib_path, info)
+                threads.append(t)
+
+            finished_threads = []
+            while True:
+                for tt in threads:
+                    if tt._state == "FINISHED":
+                        if tt not in finished_threads:
+                            finished_threads.append(tt)
+                            self.prog += 1
+                            if tt.result() is not None:
+                                self.num_downloaded += 1
+                                self.prog_text = f"Downloaded {tt.result()}"
+                if all(t._state == "FINISHED" for t in threads):
+                    break
+                sleep(0.5)
+
+        asset_lib = get_asset_lib(context)
+        if asset_lib is None:
+            self.report(
+                {"ERROR"},
+                'First open Preferences > File Paths and create an asset library named "Poly Haven"',
+            )
+            return {"CANCELLED"}
+        if not Path(asset_lib.path).exists():
+            self.report(
+                {"ERROR"},
+                "Asset library path not found! Please check the folder still exists",
+            )
+            return {"CANCELLED"}
+
         info = get_asset_info(context, self.asset_id)
 
         datablock = None
@@ -66,17 +136,18 @@ class PHA_OT_resolution_switch(bpy.types.Operator):
             for obj in datablock.instance_collection.all_objects:
                 for mat in obj.material_slots:
                     trees.append(mat.material.node_tree)
+        datablock["res"] = self.res
 
         images = []
+        lib_path = Path(asset_lib.path)
         for tree in trees:
             images += get_images_in_tree(tree)
-            for img in images:
-                lib_path = Path(get_asset_lib(context).path)
-                rel_path = Path(bpy.path.abspath(img.filepath)).relative_to(lib_path / self.asset_id).as_posix()
-                new_path, file_info = get_matching_resolutions(info, self.res, rel_path)
-                new_path = lib_path / self.asset_id / new_path
-                if not new_path.exists():
-                    download_file(file_info["url"], new_path)
-                img.filepath = str(new_path)
-        datablock["res"] = self.res
-        return {"FINISHED"}
+
+        self.th = threading.Thread(target=long_task, args=(self, images, lib_path))
+
+        self.th.start()
+
+        wm = context.window_manager
+        self._timer = wm.event_timer_add(0.1, window=context.window)
+        wm.modal_handler_add(self)
+        return {"RUNNING_MODAL"}
