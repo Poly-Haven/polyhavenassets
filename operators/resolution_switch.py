@@ -150,13 +150,15 @@ class PHA_OT_resolution_switch(bpy.types.Operator):
         lib_path = Path(asset_lib.path)
         for tree in trees:
             images += get_images_in_tree(tree)
+        images = list(set(images))
 
         images_exist = []
         for img in images:
             images_exist.append(update_image(img, self.asset_id, self.res, lib_path, info, dry_run=True))
 
         if all(images_exist):
-            update_image(img, self.asset_id, self.res, lib_path, info, dry_run=False)
+            for img in images:
+                update_image(img, self.asset_id, self.res, lib_path, info, dry_run=False)
             return {"FINISHED"}
         else:
             self.th = threading.Thread(target=long_task, args=(self, images, lib_path))
