@@ -1,6 +1,7 @@
 import bpy
 from ..utils.is_ph_asset import is_ph_asset
 from ..icons import get_icons
+from ..ui import statusbar
 
 
 class PHA_PT_asset_model(bpy.types.Panel):
@@ -24,10 +25,13 @@ class PHA_PT_asset_model(bpy.types.Panel):
         row.label(text=f"Asset: {self.asset_id}", icon_value=icons["polyhaven"].icon_id)
         sub = row.row(align=True)
         sub.alignment = "RIGHT"
-        sub.menu(
-            "PHA_MT_resolution_switch_model",
-            text=(context.object["res"] if "res" in context.object else "1k").upper(),
-        )
+        if context.window_manager.pha_props.progress_total != 0:
+            statusbar.ui(self, context, statusbar=False)
+        else:
+            sub.menu(
+                "PHA_MT_resolution_switch_model",
+                text=(context.object["res"] if "res" in context.object else "1k").upper(),
+            )
         row.separator()  # Space at end
 
     def draw(self, context):
