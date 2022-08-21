@@ -26,7 +26,7 @@ class PHA_PT_asset_texture:
         sub = row.row(align=True)
         sub.alignment = "RIGHT"
         if context.window_manager.pha_props.progress_total != 0:
-            statusbar.ui(sub, context, statusbar=False)
+            statusbar.ui(self, context, statusbar=False)
         else:
             sub.menu(
                 "PHA_MT_resolution_switch_texture",
