@@ -21,7 +21,7 @@ imp.reload(PT_asset_texture)
 imp.reload(MT_resolution_switch)
 
 classes = [
-    PT_main.PHA_PT_main,
+    # PT_main.PHA_PT_main,
     PT_asset_hdri.PHA_PT_asset_hdri,
     PT_asset_model.PHA_PT_asset_model,
     PT_asset_texture.PHA_PT_asset_texture_eevee,
