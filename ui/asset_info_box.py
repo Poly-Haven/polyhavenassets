@@ -1,14 +1,33 @@
 import logging
+import requests
 import time
+import threading
+from ..constants import REQ_HEADERS
 from .. import icons
 from ..utils.get_asset_info import get_asset_info
 
 log = logging.getLogger(__name__)
-ASSET_INFO = {}  # Stored globally to avoid fetching data on every redraw
+
+# Stored globally to avoid fetching data on every redraw
+ASSET_INFO = {}
+SPONSOR_INFO = {}
+
+
+def get_sponsor_info(uid):
+    log.debug(f"GETTING SPONSOR INFO {uid}")
+    url = f"https://api.polyhaven.com/sponsor/{uid}"
+    res = requests.get(url, headers=REQ_HEADERS)
+
+    if res.status_code != 200:
+        log.error(f"Error retrieving sponsor info, status code: {res.status_code}")
+        return None
+
+    SPONSOR_INFO[uid] = res.json()
 
 
 def draw(self, context, layout, asset_id):
     global ASSET_INFO
+    i = icons.get_icons()
 
     if asset_id not in ASSET_INFO:
         log.debug(f"GETTING ASSET INFO {asset_id}")
@@ -36,8 +55,35 @@ def draw(self, context, layout, asset_id):
             "wm.url_open", text="", icon="LINKED", emboss=False
         ).url = f"https://www.openstreetmap.org/?mlat={gps[0]}&mlon={gps[1]}&zoom=14#map=13/{gps[0]}/{gps[1]}"
 
+    col.separator()
+    row = col.row(align=True)
+    row.alignment = "CENTER"
+    row.label(text="", icon_value=i["heart"].icon_id)
+    row.label(text="Sponsored by:")
+    row.operator("wm.url_open", text="", icon="QUESTION").url = "https://www.patreon.com/polyhaven/overview"
+    if "sponsors" not in info or not info["sponsors"]:
+        row = col.row()
+        row.alignment = "CENTER"
+        row.label(text="No one yet :(")
+    else:
+        for uid in info["sponsors"]:
+            row = col.row(align=True)
+            row.alignment = "CENTER"
+            if type(uid) != str:
+                sponsor_data = uid
+            else:
+                if uid in SPONSOR_INFO:
+                    sponsor_data = SPONSOR_INFO[uid]
+                else:
+                    sponsor_data = {"name": "Loading..."}
+                    SPONSOR_INFO[uid] = sponsor_data
+                    th = threading.Thread(target=get_sponsor_info, args=(uid,))
+                    th.start()
+            row.label(text=sponsor_data["name"])
+            if "url" in sponsor_data:
+                row.operator("wm.url_open", text="", icon="LINKED", emboss=False).url = sponsor_data["url"]
+
     row = box.row()
-    i = icons.get_icons()
     row.operator(
         "wm.url_open", text="View on polyhaven.com", icon="URL"
     ).url = f"https://polyhaven.com/a/{self.asset_id}"
