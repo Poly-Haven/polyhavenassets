@@ -1,6 +1,8 @@
 *.blend?
 test.py
 phassets_test.blend
+desktop.ini
+polyhavenassets_updater/
 
 # ------------------------ Pre-populated by GitHub template ------------------------
 
