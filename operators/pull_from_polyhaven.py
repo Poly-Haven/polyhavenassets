@@ -16,11 +16,19 @@ from ..utils import progress
 log = logging.getLogger(__name__)
 
 
-def update_asset(context, slug, info, lib_dir):
+def update_asset(context, slug, info, lib_dir, dry_run=False):
+    """
+    Download asset if it doesn't exist.
+    If dry_run is True, return a boolean indicating whether the asset exists.
+    """
     info_fp = lib_dir / slug / "info.json"
     if not info_fp.exists():
+        if dry_run:
+            return False
         download_asset(slug, info, lib_dir, info_fp)
         return slug
+    if dry_run:
+        return True
     return None
 
 
@@ -160,10 +168,15 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
         import threading
 
         def long_task(self, assets, asset_lib):
-            executor = ThreadPoolExecutor(max_workers=20)
-            progress.init(context, len(assets), word="Downloading")
-            threads = []
+            assets_to_fetch = {}
             for slug, asset in assets.items():
+                exists = update_asset(context, slug, asset, Path(asset_lib.path), dry_run=True)
+                if not exists:
+                    assets_to_fetch[slug] = asset
+            progress.init(context, len(assets_to_fetch), word="Downloading")
+            executor = ThreadPoolExecutor(max_workers=20)
+            threads = []
+            for slug, asset in assets_to_fetch.items():
                 t = executor.submit(update_asset, context, slug, asset, Path(asset_lib.path))
                 threads.append(t)
 
