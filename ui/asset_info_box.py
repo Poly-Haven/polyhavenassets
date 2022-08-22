@@ -1,5 +1,6 @@
 import logging
 import time
+from .. import icons
 from ..utils.get_asset_info import get_asset_info
 
 log = logging.getLogger(__name__)
@@ -36,7 +37,10 @@ def draw(self, context, layout, asset_id):
         ).url = f"https://www.openstreetmap.org/?mlat={gps[0]}&mlon={gps[1]}&zoom=14#map=13/{gps[0]}/{gps[1]}"
 
     row = box.row()
-    row.alignment = "RIGHT"
+    i = icons.get_icons()
     row.operator(
         "wm.url_open", text="View on polyhaven.com", icon="URL"
     ).url = f"https://polyhaven.com/a/{self.asset_id}"
+    row.operator(
+        "wm.url_open", text="Support us!", icon_value=i["patreon"].icon_id
+    ).url = "https://www.patreon.com/polyhaven/overview"
