@@ -25,7 +25,7 @@ To check for a new version of the add-on, simply visit the Preferences and click
 
 ## Usage
 
-1. After enabling the add-on, [add a new Asset Library](https://file.coffee/u/sPrJY2-9578l2WjmmOA3n.png) in your preferences called `Poly Haven`.
+1. After enabling the add-on, [add a new Asset Library](https://file.coffee/u/sPrJY2-9578l2WjmmOA3n.png) in your preferences called `Poly Haven`. This is where assets will be downloaded to.
 2. Open the asset browser editor and select the Poly Haven library at the top left.
 3. Click the ***Fetch Assets*** button in the header of the asset browser.
 4. After the initial download (which currently is around 3.3GB), simply drag and drop the assets into your scene.
@@ -34,3 +34,4 @@ To check for a new version of the add-on, simply visit the Preferences and click
 ## Known Issues
 
 1. After installing and downloading assets for the first time, the list of catalogs may not be updated automatically. Simply restart Blender and you should see them.
+2. It would be nice if users didn't have to download all ~1000 of our assets beforehand, but rather have them download dynamically when they're dragged into the scene. Right now it doesn't seem like this is possible in the Blender API, but it should be possible sometime in the future.
