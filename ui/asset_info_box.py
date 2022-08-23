@@ -35,6 +35,9 @@ def draw(self, context, layout, asset_id):
 
     info = ASSET_INFO[asset_id]
 
+    if not info:
+        return
+
     layout.separator()
     box = layout.box()
     col = box.column(align=True)
