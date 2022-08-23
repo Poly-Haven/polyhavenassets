@@ -131,6 +131,8 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
     bl_description = "Updates the local asset library with new assets from polyhaven.com"
     bl_options = {"REGISTER", "UNDO"}
 
+    asset_type: bpy.props.StringProperty(default="all")
+
     prog = 0
     prog_text = None
     num_downloaded = 0
@@ -208,7 +210,14 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
             )
             return {"CANCELLED"}
 
-        error, assets = get_asset_list()
+        if self.asset_type not in ["hdris", "textures", "models", "all"]:
+            self.report(
+                {"ERROR"},
+                f"Type {self.asset_type} is not a valid asset type",
+            )
+            return {"CANCELLED"}
+
+        error, assets = get_asset_list(self.asset_type)
         if error:
             self.report({"ERROR"}, error)
             return {"CANCELLED"}

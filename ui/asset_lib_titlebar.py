@@ -8,8 +8,9 @@ def ui(self, context):
 
     props = context.window_manager.pha_props
     layout = self.layout
-    row = layout.row()
-    row.alignment = "RIGHT"
+    sub = layout.row()
+    row = sub.row(align=True)
+    row.use_property_split = True
     i = icons.get_icons()
     row.operator(
         "pha.pull_from_polyhaven",
@@ -23,4 +24,6 @@ def ui(self, context):
             )
         ),
         icon_value=i["polyhaven"].icon_id,
-    )
+    ).asset_type = "all"
+    b = row.box()  # Force some kind of emboss effect
+    b.menu("PHA_MT_pull_by_type", text="", icon="DOWNARROW_HLT")
