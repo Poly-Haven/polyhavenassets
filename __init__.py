@@ -2,7 +2,7 @@ bl_info = {
     "name": "Poly Haven Assets",
     "description": "Dynamically adds all HDRIs, materials and 3D models from polyhaven.com into the Asset Browser",
     "author": "Poly Haven",
-    "version": (0, 0, 2),
+    "version": (0, 0, 3),
     "blender": (3, 2, 0),
     "location": "Asset Browser",
     "warning": "",
