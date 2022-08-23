@@ -6,6 +6,7 @@ def init(context, num_items, word="Progress"):
     props.progress_word = word
     props.progress_total = num_items
     props.progress_percent = 0
+    props.progress_cancel = False
 
 
 def update(context, prog, text=None):

@@ -2,13 +2,17 @@ from ..icons import get_icons
 
 
 def ui(self, context, statusbar=True):
-    if context.window_manager.pha_props.progress_total:
-        self.layout.prop(
-            context.window_manager.pha_props,
+    props = context.window_manager.pha_props
+    if props.progress_total:
+        row = self.layout.row(align=True)
+        row.prop(
+            props,
             "progress_percent",
-            text=context.window_manager.pha_props.progress_word,
+            text="Cancelling..." if props.progress_cancel else props.progress_word,
             slider=True,
         )
+        if not props.progress_cancel:
+            row.operator("pha.cancel_download", text="", icon="CANCEL")
         if statusbar:
             icons = get_icons()
             self.layout.label(text="", icon_value=icons["polyhaven"].icon_id)

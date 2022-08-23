@@ -37,6 +37,7 @@ class PHAProperties(bpy.types.PropertyGroup):
         default=0, min=0, max=100, step=1, subtype="PERCENTAGE", options={"HIDDEN"}  # noqa: F821
     )
     progress_word: bpy.props.StringProperty(options={"HIDDEN"})  # noqa: F821
+    progress_cancel: bpy.props.BoolProperty(default=False, options={"HIDDEN"})  # noqa: F821
     new_assets: bpy.props.IntProperty(default=0, options={"HIDDEN"})  # noqa: F821
 
 

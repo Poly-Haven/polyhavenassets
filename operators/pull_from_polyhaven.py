@@ -21,6 +21,8 @@ def update_asset(context, slug, info, lib_dir, dry_run=False):
     Download asset if it doesn't exist.
     If dry_run is True, return a boolean indicating whether the asset exists.
     """
+    if context.window_manager.pha_props.progress_cancel:
+        return None
     info_fp = lib_dir / slug / "info.json"
     if not info_fp.exists():
         if dry_run:
@@ -47,11 +49,17 @@ def download_asset(slug, info, lib_dir, info_fp):
     log.info(f"Downloading {slug}")
     res = "1k"  # Download lowest resolution by default
 
+    if bpy.context.window_manager.pha_props.progress_cancel:
+        return (f"Cancelled {slug}", None)
+
     thumbnail_file = lib_dir / slug / "thumbnail.webp"
     download_file(
         f"https://cdn.polyhaven.com/asset_img/thumbs/{slug}.png?width=256&height=256",
         thumbnail_file,
     )
+
+    if bpy.context.window_manager.pha_props.progress_cancel:
+        return (f"Cancelled {slug}", None)
 
     if info["type"] > 0:  # Textures and models
         blend = info["files"]["blend"][res]["blend"]
@@ -65,12 +73,19 @@ def download_asset(slug, info, lib_dir, info_fp):
             threads.append(t)
         while any(t._state != "FINISHED" for t in threads):
             sleep(0.1)  # Block until all downloads are complete
+        if bpy.context.window_manager.pha_props.progress_cancel:
+            return (f"Cancelled {slug}", None)
         mark_asset(blend_file, slug, info, thumbnail_file)
     else:  # HDRIs
         url = info["files"]["hdri"][res]["hdr"]["url"]
         hdr_file = lib_dir / slug / Path(url).name
         download_file(url, hdr_file)
+        if bpy.context.window_manager.pha_props.progress_cancel:
+            return (f"Cancelled {slug}", None)
         make_hdr_blend(hdr_file, slug, info, thumbnail_file)
+
+    if bpy.context.window_manager.pha_props.progress_cancel:
+        return (f"Cancelled {slug}", None)
 
     with info_fp.open("w") as f:
         f.write(json.dumps(info, indent=4))
