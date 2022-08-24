@@ -16,7 +16,7 @@ A Blender add-on to integrate our assets natively in the asset browser.
 
 1. [Visit the releases page](https://github.com/Poly-Haven/polyhavenassets/tags) and click the `zip` button for the latest version.
 2. Install this zip file from Blender's User Preferences.
-3. Rename the installed folder (located in `%appdata%\Blender Foundation\Blender\x.x\scripts\addons\polyhavenassets-x.x.x`) to just `polyhavenassets` without the version number at the end.
+3. **Rename the installed folder** (located in `%appdata%\Blender Foundation\Blender\x.x\scripts\addons\polyhavenassets-x.x.x`) to just `polyhavenassets` without the version number at the end.
 4. Click the `Refresh` button at the top right of the preferences and enable the add-on
 
 ### Updating:

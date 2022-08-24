@@ -4,6 +4,8 @@ phassets_test.blend
 desktop.ini
 polyhavenassets_updater/
 early_access.json
+build_release.py
+polyhavenassets.zip
 
 # ------------------------ Pre-populated by GitHub template ------------------------
 
