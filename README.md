@@ -6,13 +6,17 @@ A Blender add-on to integrate our assets natively in the asset browser.
 
 ## Features
 
-1. Downloads all assets from Poly Haven (at 1k resolution by default), and list them under their respective categories in the Asset Browser.
-2. Lets you swap the resolution of an asset to higher/lower resolutions any time after import.
+1. Downloads all assets from [Poly Haven](https://polyhaven.com/) (at 1k resolution by default), and list them under their respective categories in the Asset Browser.
+2. Lets you swap the resolution of an asset to higher/lower resolutions any time after import (most are at least 8K).
 3. Set the texture mapping scale to the correct real-world size according to the surfaces you've applied it to.
 4. One-click setup of texture displacement with adaptive subdivision.
 5. Simple HDRI rotation and brightness sliders.
 
 ## Installation
+
+If you purchased this add-on on the [Blender Market](https://blendermarket.com/products/poly-haven-asset-browser) or got it through [Patreon](https://www.patreon.com/posts/70974704), simply install the zip you downloaded there, no need to follow these instructions!
+
+If not, follow the instructions below to download it for free. **If you like it, please consider [purchasing it](https://blendermarket.com/products/poly-haven-asset-browser)** to support our work on future assets :) Everyone tells me $30 is a steal for over 1000 high quality assets. You'll also get early access to upcoming content, sometimes months before everyone else.
 
 1. [Visit the releases page](https://github.com/Poly-Haven/polyhavenassets/tags) and click the `zip` button for the latest version.
 2. Install this zip file from Blender's User Preferences.
