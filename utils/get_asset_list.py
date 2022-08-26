@@ -1,3 +1,4 @@
+import bpy
 import logging
 import requests
 from ..constants import REQ_HEADERS
@@ -11,7 +12,8 @@ def get_asset_list(asset_type="all"):
 
     url += "&future=true" if early_access else ""
 
-    res = requests.get(url, headers=REQ_HEADERS)
+    verify_ssl = not bpy.context.preferences.addons["polyhavenassets"].preferences.disable_ssl_verify
+    res = requests.get(url, headers=REQ_HEADERS, verify=verify_ssl)
 
     if res.status_code != 200:
         error = f"Error retrieving asset list, status code: {res.status_code}"

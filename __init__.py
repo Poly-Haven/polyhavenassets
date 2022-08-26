@@ -45,6 +45,12 @@ class PHAProperties(bpy.types.PropertyGroup):
 class PHAPreferences(bpy.types.AddonPreferences):
     bl_idname = __package__
 
+    disable_ssl_verify = bpy.props.BoolProperty(
+        name="Disable SSL Verification",
+        description="Disable SSL verification when fetching assets. Use this if you are getting SSL errors",
+        default=False,
+    )
+
     # Add-on Updater Prefs
     auto_check_update = bpy.props.BoolProperty(
         name="Auto-check for Update",
@@ -70,6 +76,9 @@ class PHAPreferences(bpy.types.AddonPreferences):
     updater_expand_prefs = bpy.props.BoolProperty(default=False)
 
     def draw(self, context):
+        layout = self.layout
+        layout.prop(self, "disable_ssl_verify")
+
         ui.prefs_lib_reminder.prefs_lib_reminder(self, context)
 
         addon_updater_ops.update_settings_ui(self, context)

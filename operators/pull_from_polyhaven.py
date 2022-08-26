@@ -36,7 +36,8 @@ def update_asset(context, slug, info, lib_dir, dry_run=False):
 
 def download_asset(slug, info, lib_dir, info_fp):
     url = f"https://api.polyhaven.com/files/{slug}"
-    res = requests.get(url, headers=REQ_HEADERS)
+    verify_ssl = not bpy.context.preferences.addons["polyhavenassets"].preferences.disable_ssl_verify
+    res = requests.get(url, headers=REQ_HEADERS, verify=verify_ssl)
 
     if res.status_code != 200:
         msg = f"Error retrieving file list for {slug}, status code: {res.status_code}"

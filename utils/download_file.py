@@ -14,7 +14,8 @@ RES = {}
 
 def get(url, key):
     global RES
-    RES[key] = requests.get(url, headers=REQ_HEADERS)
+    verify_ssl = not bpy.context.preferences.addons["polyhavenassets"].preferences.disable_ssl_verify
+    RES[key] = requests.get(url, headers=REQ_HEADERS, verify=verify_ssl)
 
 
 def download_file(url, dest):

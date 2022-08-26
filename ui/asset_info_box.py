@@ -1,3 +1,4 @@
+import bpy
 import logging
 import requests
 import time
@@ -16,7 +17,8 @@ SPONSOR_INFO = {}
 def get_sponsor_info(uid):
     log.debug(f"GETTING SPONSOR INFO {uid}")
     url = f"https://api.polyhaven.com/sponsor/{uid}"
-    res = requests.get(url, headers=REQ_HEADERS)
+    verify_ssl = not bpy.context.preferences.addons["polyhavenassets"].preferences.disable_ssl_verify
+    res = requests.get(url, headers=REQ_HEADERS, verify=verify_ssl)
 
     if res.status_code != 200:
         log.error(f"Error retrieving sponsor info, status code: {res.status_code}")
