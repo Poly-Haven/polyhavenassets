@@ -15,7 +15,11 @@ RES = {}
 def get(url, key):
     global RES
     verify_ssl = not bpy.context.preferences.addons["polyhavenassets"].preferences.disable_ssl_verify
-    RES[key] = requests.get(url, headers=REQ_HEADERS, verify=verify_ssl)
+    try:
+        RES[key] = requests.get(url, headers=REQ_HEADERS, verify=verify_ssl)
+    except Exception as e:
+        log.error(e)
+        RES[key] = e
 
 
 def download_file(url, dest):
@@ -36,6 +40,10 @@ def download_file(url, dest):
     th.join()
 
     res = RES[key]
+    if isinstance(res, Exception):
+        msg = f"[{type(res).__name__}] Error retrieving {url}"
+        log.error(msg)
+        return msg
     if res.status_code != 200:
         msg = f"Error retrieving {url}, status code: {res.status_code}"
         log.error(msg)

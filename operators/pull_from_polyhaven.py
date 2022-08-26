@@ -22,27 +22,35 @@ def update_asset(context, slug, info, lib_dir, dry_run=False):
     If dry_run is True, return a boolean indicating whether the asset exists.
     """
     if context.window_manager.pha_props.progress_cancel:
-        return None
+        return (None, None)
     info_fp = lib_dir / slug / "info.json"
     if not info_fp.exists():
         if dry_run:
-            return False
-        download_asset(slug, info, lib_dir, info_fp)
-        return slug
+            return (None, False)
+        error = download_asset(slug, info, lib_dir, info_fp)
+        if error:
+            return (error, None)
+        else:
+            return (None, slug)
     if dry_run:
-        return True
-    return None
+        return (None, True)
+    return (None, None)
 
 
 def download_asset(slug, info, lib_dir, info_fp):
     url = f"https://api.polyhaven.com/files/{slug}"
     verify_ssl = not bpy.context.preferences.addons["polyhavenassets"].preferences.disable_ssl_verify
-    res = requests.get(url, headers=REQ_HEADERS, verify=verify_ssl)
+    try:
+        res = requests.get(url, headers=REQ_HEADERS, verify=verify_ssl)
+    except Exception as e:
+        msg = f"[{type(e).__name__}] Error retrieving {url}"
+        log.error(msg)
+        return msg
 
     if res.status_code != 200:
         msg = f"Error retrieving file list for {slug}, status code: {res.status_code}"
         log.error(msg)
-        return (msg, None)
+        return msg
 
     info["files"] = res.json()
     info_fp.parent.mkdir(parents=True, exist_ok=True)
@@ -51,16 +59,19 @@ def download_asset(slug, info, lib_dir, info_fp):
     res = "1k"  # Download lowest resolution by default
 
     if bpy.context.window_manager.pha_props.progress_cancel:
-        return (f"Cancelled {slug}", None)
+        return f"Cancelled {slug}"
 
     thumbnail_file = lib_dir / slug / "thumbnail.webp"
-    download_file(
+    error = download_file(
         f"https://cdn.polyhaven.com/asset_img/thumbs/{slug}.png?width=256&height=256",
         thumbnail_file,
     )
 
     if bpy.context.window_manager.pha_props.progress_cancel:
-        return (f"Cancelled {slug}", None)
+        return f"Cancelled {slug}"
+
+    if error:
+        return error
 
     if info["type"] > 0:  # Textures and models
         blend = info["files"]["blend"][res]["blend"]
@@ -75,23 +86,25 @@ def download_asset(slug, info, lib_dir, info_fp):
         while any(t._state != "FINISHED" for t in threads):
             sleep(0.1)  # Block until all downloads are complete
         if bpy.context.window_manager.pha_props.progress_cancel:
-            return (f"Cancelled {slug}", None)
+            return f"Cancelled {slug}"
         mark_asset(blend_file, slug, info, thumbnail_file)
     else:  # HDRIs
         url = info["files"]["hdri"][res]["hdr"]["url"]
         hdr_file = lib_dir / slug / Path(url).name
-        download_file(url, hdr_file)
+        error = download_file(url, hdr_file)
         if bpy.context.window_manager.pha_props.progress_cancel:
-            return (f"Cancelled {slug}", None)
+            return f"Cancelled {slug}"
+        if error:
+            return error
         make_hdr_blend(hdr_file, slug, info, thumbnail_file)
 
     if bpy.context.window_manager.pha_props.progress_cancel:
-        return (f"Cancelled {slug}", None)
+        return f"Cancelled {slug}"
 
     with info_fp.open("w") as f:
         f.write(json.dumps(info, indent=4))
 
-    return (None, None)
+    return None
 
 
 def mark_asset(blend_file, slug, info, thumbnail_file):
@@ -188,7 +201,7 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
         def long_task(self, assets, asset_lib):
             assets_to_fetch = {}
             for slug, asset in assets.items():
-                exists = update_asset(context, slug, asset, Path(asset_lib.path), dry_run=True)
+                error, exists = update_asset(context, slug, asset, Path(asset_lib.path), dry_run=True)
                 if not exists:
                     assets_to_fetch[slug] = asset
             progress.init(context, len(assets_to_fetch), word="Downloading")
@@ -205,9 +218,12 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
                         if tt not in finished_threads:
                             finished_threads.append(tt)
                             self.prog += 1
-                            if tt.result() is not None:
+                            error, result = tt.result()
+                            if error:
+                                self.report({"ERROR"}, error)
+                            if result is not None:
                                 self.num_downloaded += 1
-                                self.prog_text = f"Downloaded {tt.result()}"
+                                self.prog_text = f"Downloaded {result}"
                 if all(t._state == "FINISHED" for t in threads):
                     break
                 sleep(0.5)
