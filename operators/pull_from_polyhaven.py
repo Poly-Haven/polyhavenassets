@@ -38,8 +38,9 @@ def update_asset(context, slug, info, lib_dir, dry_run=False):
 
 
 def download_asset(slug, info, lib_dir, info_fp):
+    prefs = bpy.context.preferences.addons["polyhavenassets"].preferences
     url = f"https://api.polyhaven.com/files/{slug}"
-    verify_ssl = not bpy.context.preferences.addons["polyhavenassets"].preferences.disable_ssl_verify
+    verify_ssl = not prefs.disable_ssl_verify
     try:
         res = requests.get(url, headers=REQ_HEADERS, verify=verify_ssl)
     except Exception as e:
@@ -62,8 +63,9 @@ def download_asset(slug, info, lib_dir, info_fp):
         return f"Cancelled {slug}"
 
     thumbnail_file = lib_dir / slug / "thumbnail.webp"
+    cdn = "cdn.polyhaven.org" if prefs.use_alt_cdn else "cdn.polyhaven.com"
     error = download_file(
-        f"https://cdn.polyhaven.com/asset_img/thumbs/{slug}.png?width=256&height=256",
+        f"https://{cdn}/asset_img/thumbs/{slug}.png?width=256&height=256",
         thumbnail_file,
     )
 

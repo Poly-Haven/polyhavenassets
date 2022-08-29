@@ -2,7 +2,7 @@ bl_info = {
     "name": "Poly Haven Assets",
     "description": "Dynamically adds all HDRIs, materials and 3D models from polyhaven.com into the Asset Browser",
     "author": "Poly Haven",
-    "version": (1, 0, 1),
+    "version": (1, 0, 2),
     "blender": (3, 2, 0),
     "location": "Asset Browser",
     "warning": "",
@@ -50,6 +50,11 @@ class PHAPreferences(bpy.types.AddonPreferences):
         description="Disable SSL verification when fetching assets. Use this if you are getting SSL errors",
         default=False,
     )
+    use_alt_cdn = bpy.props.BoolProperty(
+        name="Use alternative CDN",
+        description="Try enable this if you're experiencing errors connecting to cdn.polyhaven.com",
+        default=False,
+    )
 
     # Add-on Updater Prefs
     auto_check_update = bpy.props.BoolProperty(
@@ -77,7 +82,9 @@ class PHAPreferences(bpy.types.AddonPreferences):
 
     def draw(self, context):
         layout = self.layout
-        layout.prop(self, "disable_ssl_verify")
+        row = layout.row()
+        row.prop(self, "use_alt_cdn")
+        row.prop(self, "disable_ssl_verify")
 
         ui.prefs_lib_reminder.prefs_lib_reminder(self, context)
 
