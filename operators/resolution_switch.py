@@ -141,9 +141,15 @@ class PHA_OT_resolution_switch(bpy.types.Operator):
             trees.append(datablock.node_tree)
         elif info["type"] == 2:
             datablock = context.object
-            for obj in datablock.instance_collection.all_objects:
-                for mat in obj.material_slots:
-                    trees.append(mat.material.node_tree)
+            if datablock.instance_collection:
+                for obj in datablock.instance_collection.all_objects:
+                    for mat in obj.material_slots:
+                        trees.append(mat.material.node_tree)
+                        mat.material["res"] = self.res
+            else:
+                # "Made real" asset, changing resolution from material settings
+                datablock = context.material
+                trees.append(datablock.node_tree)
         datablock["res"] = self.res
 
         images = []
