@@ -108,13 +108,20 @@ for t in tags.split(";"):
 asset.asset_data.author = authors
 asset.asset_data.description = f"A CC0 {TYPES[asset_type][:-1]} by polyhaven.com"
 
-# Save file
-bpy.context.preferences.filepaths.save_version = 0  # Avoid .blend1
+# Make all images relative
 if asset_type == "0":
     out_file = Path(hdr_file).parent / f"{slug}.blend"
-    bpy.ops.wm.save_as_mainfile(
-        filepath=str(out_file),
-        compress=True,
-    )
 else:
-    bpy.ops.wm.save_mainfile(compress=True)
+    out_file = Path(bpy.data.filepath)
+for img in bpy.data.images:
+    if not img.filepath:
+        continue
+    try:
+        rel = Path(bpy.path.abspath(img.filepath)).relative_to(out_file.parent)
+        img.filepath = f"//{rel.as_posix()}"
+    except ValueError:
+        print(f"WARN: Could not make {img.name} relative to {out_file.parent}")
+
+# Save file
+bpy.context.preferences.filepaths.save_version = 0  # Avoid .blend1
+bpy.ops.wm.save_mainfile(filepath=str(out_file), compress=True, relative_remap=False)
