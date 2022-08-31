@@ -25,6 +25,8 @@ imp.reload(MT_pull_by_type)
 classes = [
     PT_asset_hdri.PHA_PT_asset_hdri,
     PT_asset_model.PHA_PT_asset_model,
+    PT_asset_model.PHA_PT_asset_model_eevee,
+    PT_asset_model.PHA_PT_asset_model_cycles,
     PT_asset_texture.PHA_PT_asset_texture_eevee,
     PT_asset_texture.PHA_PT_asset_texture_cycles,
     PT_sidebar.PHA_PT_sidebar,
