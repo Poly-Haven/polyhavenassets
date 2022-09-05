@@ -1,3 +1,4 @@
+import bpy
 from .. import icons
 
 
@@ -15,12 +16,16 @@ def ui(self, context):
     row.operator(
         "pha.pull_from_polyhaven",
         text=(
-            "Downloading..."
-            if props.progress_total != 0
+            "Needs Blender 3.2+"
+            if bpy.app.version_string < "3.2.0"
             else (
-                f"Fetch {props.new_assets} new asset{'s' if props.new_assets != 1 else ''}"
-                if props.new_assets
-                else "Fetch Assets"
+                "Downloading..."
+                if props.progress_total != 0
+                else (
+                    f"Fetch {props.new_assets} new asset{'s' if props.new_assets != 1 else ''}"
+                    if props.new_assets
+                    else "Fetch Assets"
+                )
             )
         ),
         icon_value=i["polyhaven"].icon_id,
