@@ -39,6 +39,7 @@ class PHAProperties(bpy.types.PropertyGroup):
     progress_word: bpy.props.StringProperty(options={"HIDDEN"})  # noqa: F821
     progress_cancel: bpy.props.BoolProperty(default=False, options={"HIDDEN"})  # noqa: F821
     new_assets: bpy.props.IntProperty(default=0, options={"HIDDEN"})  # noqa: F821
+    show_more_recent: bpy.props.BoolProperty(default=False, options={"HIDDEN"})  # noqa: F821
 
 
 @addon_updater_ops.make_annotations

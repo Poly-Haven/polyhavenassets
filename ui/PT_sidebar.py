@@ -1,5 +1,6 @@
 import bpy
 import textwrap
+from .. import ephemeral
 from .. import icons
 from ..utils.dpi_factor import dpi_factor
 from ..utils.early_access import early_access
@@ -29,8 +30,35 @@ class PHA_PT_sidebar(bpy.types.Panel):
         return context.area.ui_type == "ASSETS" and context.space_data.params.asset_library_ref == "Poly Haven"
 
     def draw(self, context):
+        layout = self.layout
+
+        if ephemeral.recently_downloaded:
+            box = layout.box()
+            col = box.column(align=True)
+            row = col.row()
+            row.label(text="Recently downloaded:", icon="IMPORT")
+            if context.space_data.params.filter_search:
+                row.operator("pha.go_to_asset", text="", icon="PANEL_CLOSE").asset = ""
+            list_size = 10
+            recently_downloaded = list(reversed(ephemeral.recently_downloaded))
+            for asset in (
+                recently_downloaded
+                if context.window_manager.pha_props.show_more_recent
+                else recently_downloaded[:list_size]
+            ):
+                row = col.row(align=True)
+                row.alignment = "RIGHT"
+                row.operator("pha.go_to_asset", text=f"{asset} →", emboss=False).asset = asset
+            if len(recently_downloaded) > list_size:
+                col.prop(
+                    context.window_manager.pha_props,
+                    "show_more_recent",
+                    text="",
+                    icon="TRIA_UP" if context.window_manager.pha_props.show_more_recent else "TRIA_DOWN",
+                )
+            layout.separator()
+
         if not early_access:  # We don't need to nag existing supporters :)
-            layout = self.layout
             i = icons.get_icons()
             col = layout.column()
             sidebar_width = 10000

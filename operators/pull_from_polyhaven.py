@@ -8,6 +8,7 @@ from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
 from ..constants import REQ_HEADERS
+from .. import ephemeral
 from ..utils.download_file import download_file
 from ..utils.get_asset_lib import get_asset_lib
 from ..utils.get_asset_list import get_asset_list
@@ -167,6 +168,7 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
     prog = 0
     prog_text = None
     num_downloaded = 0
+    recently_downloaded = []
     _timer = None
     th = None
 
@@ -182,6 +184,7 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
     def modal(self, context, event):
         if event.type == "TIMER":
             progress.update(context, self.prog, self.prog_text)
+            ephemeral.recently_downloaded = self.recently_downloaded
 
             if not self.th.is_alive():
                 log.debug("FINISHED ALL THREADS")
@@ -228,6 +231,7 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
                             if result is not None:
                                 self.num_downloaded += 1
                                 self.prog_text = f"Downloaded {result}"
+                                self.recently_downloaded.append(result)
                 if all(t._state == "FINISHED" for t in threads):
                     break
                 sleep(0.5)
@@ -270,6 +274,7 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
 
         self.report({"INFO"}, "Downloading in background...")
 
+        ephemeral.recently_downloaded = []
         context.window_manager.pha_props.new_assets = 0
 
         wm = context.window_manager
