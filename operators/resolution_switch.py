@@ -35,6 +35,10 @@ def get_matching_resolutions(info, res, relative_filepath):
 def get_images_in_tree(tree):
     for node in tree.nodes:
         if hasattr(node, "image"):
+            if node.image is None:
+                continue
+            if not node.image.filepath:
+                continue
             yield node.image
         if hasattr(node, "node_tree"):
             yield from get_images_in_tree(node.node_tree)
