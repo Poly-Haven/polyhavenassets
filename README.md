@@ -20,8 +20,12 @@ If not, follow the instructions below to download it for free. **If you like it,
 
 1. [Visit the releases page](https://github.com/Poly-Haven/polyhavenassets/tags) and click the `zip` button for the latest version.
 2. Install this zip file from Blender's User Preferences.
-3. **Rename the installed folder** (located in `%appdata%\Blender Foundation\Blender\x.x\scripts\addons\polyhavenassets-x.x.x`) to just `polyhavenassets` without the version number at the end.
-4. Click the `Refresh` button at the top right of the preferences and enable the add-on
+3. Locate the Blender Addons Folder  
+Windows: `%appdata%\Blender Foundation\Blender\x.x\scripts\addons\`  
+Mac: `~/Library/Application Support/Blender/x.x/scripts/addons/`  
+Linux: `~/.config/blender/x.x/scripts/addons/`
+5. **Rename the installed folder** from `polyhavenassets-x.x.x` to just `polyhavenassets` without the version number at the end.
+6. Click the `Refresh` button at the top right of the preferences and enable the add-on
 
 ### Updating:
 
