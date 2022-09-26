@@ -49,7 +49,7 @@ def update_image(img, asset_id, res, lib_path, info, dry_run=False):
     Update image with new resolution.
     If dry_run is True, return a boolean indicating whether the image exists.
     """
-    rel_path = Path(bpy.path.abspath(img.filepath)).resolve().relative_to(lib_path / asset_id).as_posix()
+    rel_path = Path(bpy.path.abspath(img.filepath)).resolve().relative_to(lib_path.resolve() / asset_id).as_posix()
     new_path, file_info = get_matching_resolutions(info, res, rel_path)
     new_path = lib_path / asset_id / new_path
     if not new_path.exists():
