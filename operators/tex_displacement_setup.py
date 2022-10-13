@@ -81,8 +81,9 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         layout = self.layout
         col = layout.column(align=True)
         if context.scene.render.engine == "CYCLES":
-            self.displacement_method = "Render"
-            col.prop_tabs_enum(self, "displacement_method")
+            # col.prop_tabs_enum(self, "displacement_method")
+            col.props_enum(self, "displacement_method")
+            # col.prop(self, "displacement_method")
             col.separator()
         col.label(text="Warning:", icon_value=icons["exclamation-triangle"].icon_id)
         if self.displacement_method == "Render":
