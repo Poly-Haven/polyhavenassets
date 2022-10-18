@@ -6,6 +6,8 @@ import logging
 
 log = logging.getLogger(__name__)
 
+_RENDER = "Render"
+_STATIC = "Static"
 
 class PHA_OT_tex_displacement_setup(bpy.types.Operator):
     bl_idname = "pha.tex_displacement_setup"
@@ -15,13 +17,13 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         "working for this material"
     )
     bl_options = {"REGISTER", "UNDO"}
-    displacement_method: bpy.props.EnumProperty(items = [("Render", "Render", "Let the render engine displace"), ("Modifier", "Modifier", "Use the Displacement Modifier")], name="Displacement Method", default="Modifier", description="")
+
+    displacement_method: bpy.props.EnumProperty(items = [(_RENDER, _RENDER, "Let the render engine displace"), (_STATIC, _STATIC, "Use the Displacement Modifier")], name="Displacement Method", default=_STATIC, description="")
     displacement_subdivisions: bpy.props.IntProperty(name="Subdivisions", default=6, min=0, soft_max=6, description="Amount of subdivisions to use for the displacement modifier")
 
     @classmethod
     def setup_render_displacement(self, context):
         context.scene.cycles.feature_set = "EXPERIMENTAL"
-        context.material.cycles.displacement_method = "DISPLACEMENT"
         objects = tex_users(context)
         for obj in objects:
             obj.cycles.use_adaptive_subdivision = True
@@ -80,22 +82,26 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         icons = get_icons()
         layout = self.layout
         col = layout.column(align=True)
-        if context.scene.render.engine == "CYCLES":
-            # col.prop_tabs_enum(self, "displacement_method")
-            col.props_enum(self, "displacement_method")
-            # col.prop(self, "displacement_method")
-            col.separator()
+
+        self.displacement_method = _RENDER if context.scene.render.engine == "CYCLES" else _STATIC 
+        # Add buttons to select displacement method
+        col.props_enum(self, "displacement_method")
+        # col.prop_tabs_enum(self, "displacement_method")
+        # col.prop(self, "displacement_method")
+        col.separator()
+
         col.label(text="Warning:", icon_value=icons["exclamation-triangle"].icon_id)
-        if self.displacement_method == "Render":
+        if self.displacement_method == _RENDER:
             col.label(text="This will enable the Experimental Feature Set, and add")
             col.label(text="adaptive Subsurf modifiers to objects using this material.")
-        elif self.displacement_method == "Modifier":
+            col.label(text="The displacement will NOT be visible in EEVEE.")
+        elif self.displacement_method == _STATIC:
             col.label(text="This will add a Subsurf modifier and a Displacement modifier")
             col.label(text="to objects using this material.")
             col.label(text="This could freeze your computer for high-poly objects.")
         col.separator()
 
-        if self.displacement_method == "Modifier":
+        if self.displacement_method == _STATIC:
             col.prop(self, "displacement_subdivisions")
             col.separator()
 
@@ -107,7 +113,7 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        if self.displacement_method == "Render":
+        if self.displacement_method == _RENDER:
             return self.setup_render_displacement(context)
-        elif self.displacement_method == "Modifier":
+        elif self.displacement_method == _STATIC:
             return self.setup_mesh_displacement(context, subdivisions=self.displacement_subdivisions)
