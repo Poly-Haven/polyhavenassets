@@ -6,7 +6,8 @@ import logging
 
 log = logging.getLogger(__name__)
 
-_RENDER = "Render"
+# Displacement modes:
+_ADAPTIVE = "Adaptive"
 _STATIC = "Static"
 
 
@@ -21,8 +22,8 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
 
     displacement_method: bpy.props.EnumProperty(
         items=[
-            (_RENDER, _RENDER, "Let the render engine displace"),
-            (_STATIC, _STATIC, "Use the Displacement Modifier"),
+            (_ADAPTIVE, _ADAPTIVE, "Dynamically tessellate the mesh based on the camera distance"),
+            (_STATIC, _STATIC, "Subdivide the mesh a specific number of times"),
         ],
         name="Displacement Method",
         default=_STATIC,
@@ -98,7 +99,7 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         layout = self.layout
         col = layout.column(align=True)
 
-        self.displacement_method = _RENDER if context.scene.render.engine == "CYCLES" else _STATIC
+        self.displacement_method = _ADAPTIVE if context.scene.render.engine == "CYCLES" else _STATIC
         # Add buttons to select displacement method
         col.props_enum(self, "displacement_method")
         # col.prop_tabs_enum(self, "displacement_method")
@@ -106,7 +107,7 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         col.separator()
 
         col.label(text="Warning:", icon_value=icons["exclamation-triangle"].icon_id)
-        if self.displacement_method == _RENDER:
+        if self.displacement_method == _ADAPTIVE:
             col.label(text="This will enable the Experimental Feature Set, and add")
             col.label(text="adaptive Subsurf modifiers to objects using this material.")
             col.label(text="The displacement will NOT be visible in EEVEE.")
@@ -128,7 +129,7 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        if self.displacement_method == _RENDER:
+        if self.displacement_method == _ADAPTIVE:
             return self.setup_render_displacement(context)
         elif self.displacement_method == _STATIC:
             return self.setup_mesh_displacement(context, subdivisions=self.displacement_subdivisions)
