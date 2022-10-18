@@ -65,6 +65,8 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
 
         nodes = material.node_tree.nodes
         # Get displacement texture from material (assumes node tree has "Displacement" node)
+        # TODO get displacement & mapping nodes more elegantly by traversing the node tree backwards from the output,
+        # using node_tree.get_output_node(context.scene.render.engine)
         displacement = nodes["Displacement"]
         midlevel = displacement.inputs["Midlevel"].default_value
         strength = displacement.inputs["Scale"].default_value
