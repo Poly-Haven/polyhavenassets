@@ -100,8 +100,9 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         col = layout.column(align=True)
 
         row = col.row()
-        row.label(text="Displacement Method:")
-        row.prop(self, "displacement_method", expand=True)
+        if context.scene.render.engine == "CYCLES":
+            row.label(text="Displacement Method:")
+            row.prop(self, "displacement_method", expand=True)
         if self.displacement_method == _STATIC:
             row = col.row()
             row.alignment = "RIGHT"
