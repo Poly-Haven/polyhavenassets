@@ -99,7 +99,6 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         layout = self.layout
         col = layout.column(align=True)
 
-        self.displacement_method = _ADAPTIVE if context.scene.render.engine == "CYCLES" else _STATIC
         row = col.row()
         row.label(text="Displacement Method:")
         row.prop(self, "displacement_method", expand=True)
@@ -120,6 +119,7 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
             col.label(text="This could freeze your computer for high-poly objects.")
 
     def invoke(self, context, event):
+        self.displacement_method = _ADAPTIVE if context.scene.render.engine == "CYCLES" else _STATIC
         return context.window_manager.invoke_props_dialog(self, width=round(350 * dpi_factor()))
 
     def execute(self, context):
