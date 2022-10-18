@@ -122,10 +122,6 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
     def invoke(self, context, event):
         return context.window_manager.invoke_props_dialog(self, width=round(350 * dpi_factor()))
 
-    @classmethod
-    def poll(self, context):
-        return True
-
     def execute(self, context):
         if self.displacement_method == _ADAPTIVE:
             return self.setup_render_displacement(context)
