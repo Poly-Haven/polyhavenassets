@@ -99,14 +99,10 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         layout = self.layout
         col = layout.column(align=True)
 
-        row = col.row()
         if context.scene.render.engine == "CYCLES":
+            row = col.row()
             row.label(text="Displacement Method:")
             row.prop(self, "displacement_method", expand=True)
-        if self.displacement_method == _STATIC:
-            row = col.row()
-            row.alignment = "RIGHT"
-            row.prop(self, "displacement_subdivisions")
         col.separator()
 
         col.label(text="Warning:", icon_value=icons["exclamation-triangle"].icon_id)
@@ -118,6 +114,9 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
             col.label(text="This will add a Subsurf modifier and a Displacement modifier")
             col.label(text="to objects using this material.")
             col.label(text="This could freeze your computer for high-poly objects.")
+
+        if self.displacement_method == _STATIC:
+            col.prop(self, "displacement_subdivisions")
 
     def invoke(self, context, event):
         self.displacement_method = _ADAPTIVE if context.scene.render.engine == "CYCLES" else _STATIC
