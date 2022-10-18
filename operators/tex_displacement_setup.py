@@ -9,6 +9,7 @@ log = logging.getLogger(__name__)
 _RENDER = "Render"
 _STATIC = "Static"
 
+
 class PHA_OT_tex_displacement_setup(bpy.types.Operator):
     bl_idname = "pha.tex_displacement_setup"
     bl_label = "Set up displacement"
@@ -18,8 +19,22 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
     )
     bl_options = {"REGISTER", "UNDO"}
 
-    displacement_method: bpy.props.EnumProperty(items = [(_RENDER, _RENDER, "Let the render engine displace"), (_STATIC, _STATIC, "Use the Displacement Modifier")], name="Displacement Method", default=_STATIC, description="")
-    displacement_subdivisions: bpy.props.IntProperty(name="Subdivisions", default=6, min=0, soft_max=6, description="Amount of subdivisions to use for the displacement modifier")
+    displacement_method: bpy.props.EnumProperty(
+        items=[
+            (_RENDER, _RENDER, "Let the render engine displace"),
+            (_STATIC, _STATIC, "Use the Displacement Modifier"),
+        ],
+        name="Displacement Method",
+        default=_STATIC,
+        description="",
+    )
+    displacement_subdivisions: bpy.props.IntProperty(
+        name="Subdivisions",
+        default=6,
+        min=0,
+        soft_max=6,
+        description="Amount of subdivisions to use for the displacement modifier",
+    )
 
     @classmethod
     def setup_render_displacement(self, context):
@@ -39,7 +54,7 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         return {"FINISHED"}
 
     @classmethod
-    def setup_mesh_displacement(self, context, subdivisions = 6):
+    def setup_mesh_displacement(self, context, subdivisions=6):
         """Add subdiv & a displacement modifiers to *physically* displace the mesh"""
         objects = tex_users(context)
         material: bpy.types.Material = context.material
@@ -69,21 +84,21 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
                 mod.subdivision_type = "SIMPLE"
                 mod.levels = subdivisions
                 mod.render_levels = subdivisions
-            
+
             mod = obj.modifiers.new("Displacement", "DISPLACE")
             mod.texture_coords = "UV"
             mod.texture = bl_texture
             mod.mid_level = midlevel
             mod.strength = strength
-    
+
         return {"FINISHED"}
-    
+
     def draw(self, context):
         icons = get_icons()
         layout = self.layout
         col = layout.column(align=True)
 
-        self.displacement_method = _RENDER if context.scene.render.engine == "CYCLES" else _STATIC 
+        self.displacement_method = _RENDER if context.scene.render.engine == "CYCLES" else _STATIC
         # Add buttons to select displacement method
         col.props_enum(self, "displacement_method")
         # col.prop_tabs_enum(self, "displacement_method")
