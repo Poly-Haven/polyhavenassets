@@ -17,6 +17,25 @@ from ..utils import progress
 log = logging.getLogger(__name__)
 
 
+def get_asset_files(slug):
+    prefs = bpy.context.preferences.addons["polyhavenassets"].preferences
+    url = f"https://api.polyhaven.com/files/{slug}"
+    verify_ssl = not prefs.disable_ssl_verify
+    try:
+        res = requests.get(url, headers=REQ_HEADERS, verify=verify_ssl)
+    except Exception as e:
+        msg = f"[{type(e).__name__}] Error retrieving {url}"
+        log.error(msg)
+        return (msg, None)
+
+    if res.status_code != 200:
+        msg = f"Error retrieving file list for {slug}, status code: {res.status_code}"
+        log.error(msg)
+        return (msg, None)
+
+    return (None, res.json())
+
+
 def update_asset(context, slug, info, lib_dir, dry_run=False):
     """
     Download asset if it doesn't exist.
@@ -24,11 +43,30 @@ def update_asset(context, slug, info, lib_dir, dry_run=False):
     """
     if context.window_manager.pha_props.progress_cancel:
         return (None, None)
+
+    error, files = get_asset_files(slug)
+    if error:
+        return (error, None)
+
+    if context.window_manager.pha_props.progress_cancel:
+        return (None, None)
+
+    do_download = False
     info_fp = lib_dir / slug / "info.json"
     if not info_fp.exists():
+        do_download = True
+    else:
+        with open(info_fp, "r") as f:
+            old_info = json.load(f)
+        if old_info["files"]:
+            if old_info["files"] != files:
+                log.info(f"{slug} files changed, redownloading")
+                do_download = True
+
+    if do_download:
         if dry_run:
             return (None, False)
-        error = download_asset(slug, info, lib_dir, info_fp)
+        error = download_asset(slug, info, files, lib_dir, info_fp)
         if error:
             return (error, None)
         else:
@@ -38,23 +76,10 @@ def update_asset(context, slug, info, lib_dir, dry_run=False):
     return (None, None)
 
 
-def download_asset(slug, info, lib_dir, info_fp):
+def download_asset(slug, info, files, lib_dir, info_fp):
     prefs = bpy.context.preferences.addons["polyhavenassets"].preferences
-    url = f"https://api.polyhaven.com/files/{slug}"
-    verify_ssl = not prefs.disable_ssl_verify
-    try:
-        res = requests.get(url, headers=REQ_HEADERS, verify=verify_ssl)
-    except Exception as e:
-        msg = f"[{type(e).__name__}] Error retrieving {url}"
-        log.error(msg)
-        return msg
 
-    if res.status_code != 200:
-        msg = f"Error retrieving file list for {slug}, status code: {res.status_code}"
-        log.error(msg)
-        return msg
-
-    info["files"] = res.json()
+    info["files"] = files
     info_fp.parent.mkdir(parents=True, exist_ok=True)
 
     log.info(f"Downloading {slug}")
@@ -207,6 +232,7 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
 
         def long_task(self, assets, asset_lib):
             assets_to_fetch = {}
+            progress.init(context, 1, word="Checking...")
             for slug, asset in assets.items():
                 error, exists = update_asset(context, slug, asset, Path(asset_lib.path), dry_run=True)
                 if not exists:
