@@ -38,13 +38,27 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
     )
 
     @classmethod
+    def find_connected_by_type(node, node_type):
+        """Find all nodes of the specified type that are connected to the inputs of the given node"""
+
+        def recursive_search(node, node_type):
+            for input in node.inputs:
+                for link in input.links:
+                    from_node = link.from_node
+                    if from_node.type == node_type:
+                        yield from_node
+                    yield from recursive_search(from_node, node_type)
+
+        return list(set(recursive_search(node, node_type)))
+
+    @classmethod
     def setup_render_displacement(self, context):
         context.scene.cycles.feature_set = "EXPERIMENTAL"
         objects = tex_users(context)
         for obj in objects:
             obj.cycles.use_adaptive_subdivision = True
             needs_subsurf = True
-            for mod in obj.modifiers:  # Reverse so we only act on the last subsurf
+            for mod in obj.modifiers:
                 if mod.type == "SUBSURF":
                     needs_subsurf = False
                     break
@@ -63,22 +77,27 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         bl_texture: bpy.types.ImageTexture = context.blend_data.textures.new(material.name + "_disp", "IMAGE")
         bl_texture.use_alpha = False
 
-        nodes = material.node_tree.nodes
-        # Get displacement texture from material (assumes node tree has "Displacement" node)
-        # TODO get displacement & mapping nodes more elegantly by traversing the node tree backwards from the output,
-        # using node_tree.get_output_node(context.scene.render.engine)
-        displacement = nodes["Displacement"]
-        midlevel = displacement.inputs["Midlevel"].default_value
-        strength = displacement.inputs["Scale"].default_value
-        bl_texture.image = displacement.inputs["Height"].links[0].from_node.image
+        # Get displacement texture from material
+        active_output = material.node_tree.get_output_node(context.scene.render.engine)
+        displacement_node = self.find_connected_by_type(active_output, "DISPLACEMENT")[0]
+        if not displacement_node:
+            self.report({"ERROR"}, "No displacement node found")
+            return {"CANCELLED"}
+        midlevel = displacement_node.inputs["Midlevel"].default_value
+        strength = displacement_node.inputs["Scale"].default_value
+        bl_texture.image = displacement_node.inputs["Height"].links[0].from_node.image
         # Fix scale
-        applied_scale = nodes["Mapping"].inputs["Scale"].default_value
+        mapping_node = self.find_connected_by_type(active_output, "MAPPING")[0]
+        if not mapping_node:
+            self.report({"ERROR"}, "No mapping node found")
+            return {"CANCELLED"}
+        applied_scale = mapping_node.inputs["Scale"].default_value
         bl_texture.crop_max_x = applied_scale[0]
         bl_texture.crop_max_y = applied_scale[1]
 
         for obj in objects:
             needs_subsurf = True
-            for mod in obj.modifiers:  # Reverse so we only act on the last subsurf
+            for mod in obj.modifiers:
                 if mod.type == "SUBSURF":
                     needs_subsurf = False
                     break
