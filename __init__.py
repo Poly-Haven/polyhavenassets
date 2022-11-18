@@ -96,7 +96,7 @@ classes = [PHAProperties, PHAPreferences] + ui.classes + operators.classes
 
 
 @persistent
-def handler(dummy):
+def hand_check_new_assets(dummy):
     threading.Thread(target=check_for_new_assets, args=(bpy.context,)).start()
 
 
@@ -115,16 +115,17 @@ def register():
     bpy.types.STATUSBAR_HT_header.prepend(ui.statusbar.ui)
 
     bpy.types.WindowManager.pha_props = bpy.props.PointerProperty(type=PHAProperties)
-    bpy.app.handlers.load_post.append(handler)
-    bpy.app.handlers.save_post.append(handler)
+    bpy.app.handlers.load_post.append(hand_check_new_assets)
+    bpy.app.handlers.save_post.append(hand_check_new_assets)
+    hand_check_new_assets(None)
 
 
 def unregister():
     addon_updater_ops.unregister()
     icons.previews_unregister()
 
-    bpy.app.handlers.load_post.remove(handler)
-    bpy.app.handlers.save_post.remove(handler)
+    bpy.app.handlers.load_post.remove(hand_check_new_assets)
+    bpy.app.handlers.save_post.remove(hand_check_new_assets)
     del bpy.types.WindowManager.pha_props
 
     bpy.types.USERPREF_PT_file_paths_asset_libraries.remove(ui.prefs_lib_reminder.prefs_lib_reminder)
