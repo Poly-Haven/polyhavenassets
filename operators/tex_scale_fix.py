@@ -24,9 +24,9 @@ class PHA_OT_tex_scale_fix(bpy.types.Operator):
         return bool(self.asset_id)
 
     def execute(self, context):
-        objects = tex_users(context)
+        objects = set(tex_users(context))
         areas = []
-        for obj in set(objects):
+        for obj in objects:
             bm = mesh_helpers.bmesh_copy_from_object(obj, apply_modifiers=True)
             area = mesh_helpers.bmesh_calc_area(bm)
             areas.append(area)
@@ -40,5 +40,15 @@ class PHA_OT_tex_scale_fix(bpy.types.Operator):
         for node in context.material.node_tree.nodes:
             if node.type == "MAPPING":
                 node.inputs["Scale"].default_value = (multiplier, multiplier, multiplier)
+        for obj in objects:
+            for mod in obj.modifiers:
+                if mod.type == "DISPLACE":
+                    try:
+                        img = mod.texture.image
+                        if is_ph_asset(context, img):
+                            mod.texture.crop_max_x = multiplier
+                            mod.texture.crop_max_y = multiplier
+                    except AttributeError:
+                        log.debug("No image on displacement modifier")
 
         return {"FINISHED"}
