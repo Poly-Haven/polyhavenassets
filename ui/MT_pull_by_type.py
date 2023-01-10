@@ -7,4 +7,10 @@ class PHA_MT_pull_by_type(bpy.types.Menu):
 
     def draw(self, context):
         for asset_type in ["All", "HDRIs", "Textures", "Models"]:
-            self.layout.operator("pha.pull_from_polyhaven", text=asset_type).asset_type = asset_type.lower()
+            op = self.layout.operator("pha.pull_from_polyhaven", text=asset_type)
+            op.asset_type = asset_type.lower()
+            op.revalidate = False
+        self.layout.separator()
+        op = self.layout.operator("pha.pull_from_polyhaven", text="Revalidate Files")
+        op.asset_type = asset_type.lower()
+        op.revalidate = True

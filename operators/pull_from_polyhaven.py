@@ -17,7 +17,7 @@ from ..utils import progress
 log = logging.getLogger(__name__)
 
 
-def update_asset(context, slug, info, lib_dir, dry_run=False):
+def update_asset(context, slug, info, lib_dir, revalidate, dry_run=False):
     """
     Download asset if it doesn't exist.
     If dry_run is True, return a boolean indicating whether the asset exists.
@@ -27,9 +27,14 @@ def update_asset(context, slug, info, lib_dir, dry_run=False):
 
     do_download = False
     info_fp = lib_dir / slug / "info.json"
-    if not info_fp.exists():
+    asset_exists = info_fp.exists()
+    if not asset_exists and not revalidate:
+        # Download new assets, but only if we're not revalidating.
         do_download = True
-    else:
+    elif asset_exists and revalidate:
+        # Force "download" (which skips existing files with matching hashes) of all existing assets.
+        do_download = True
+    elif asset_exists:
         with open(info_fp, "r") as f:
             old_info = json.load(f)
         if "files_hash" not in old_info:
@@ -179,6 +184,7 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     asset_type: bpy.props.StringProperty(default="all")
+    revalidate: bpy.props.BoolProperty(default=False)
 
     prog = 0
     prog_text = None
@@ -205,8 +211,9 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
                 log.debug("FINISHED ALL THREADS")
                 progress.end(context)
                 self.th.join()
+                prog_word = "Revalidated" if self.revalidate else "Downloaded"
                 self.report(
-                    {"INFO"}, f"Downloaded {self.num_downloaded} asset{'s' if self.num_downloaded != 1 else ''}"
+                    {"INFO"}, f"{prog_word} {self.num_downloaded} asset{'s' if self.num_downloaded != 1 else ''}"
                 )
                 try:
                     bpy.ops.asset.library_refresh()
@@ -224,14 +231,14 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
             assets_to_fetch = {}
             progress.init(context, 1, word="Checking...")
             for slug, asset in assets.items():
-                error, exists = update_asset(context, slug, asset, Path(asset_lib.path), dry_run=True)
+                error, exists = update_asset(context, slug, asset, Path(asset_lib.path), self.revalidate, dry_run=True)
                 if not exists:
                     assets_to_fetch[slug] = asset
-            progress.init(context, len(assets_to_fetch), word="Downloading")
+            progress.init(context, len(assets_to_fetch), word="Checking" if self.revalidate else "Downloading")
             executor = ThreadPoolExecutor(max_workers=20)
             threads = []
             for slug, asset in assets_to_fetch.items():
-                t = executor.submit(update_asset, context, slug, asset, Path(asset_lib.path))
+                t = executor.submit(update_asset, context, slug, asset, Path(asset_lib.path), self.revalidate)
                 threads.append(t)
 
             finished_threads = []
@@ -246,7 +253,8 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
                                 self.report({"ERROR"}, error)
                             if result is not None:
                                 self.num_downloaded += 1
-                                self.prog_text = f"Downloaded {result}"
+                                prog_word = "Revalidated" if self.revalidate else "Downloaded"
+                                self.prog_text = f"{prog_word} {result}"
                                 self.recently_downloaded.append(result)
                 if all(t._state == "FINISHED" for t in threads):
                     break
@@ -288,7 +296,8 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
 
         self.th.start()
 
-        self.report({"INFO"}, "Downloading in background...")
+        prog_word = "Revalidating" if self.revalidate else "Downloading"
+        self.report({"INFO"}, f"{prog_word} in background...")
 
         ephemeral.recently_downloaded = []
         context.window_manager.pha_props.new_assets = 0

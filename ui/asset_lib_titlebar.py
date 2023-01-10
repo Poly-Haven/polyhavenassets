@@ -19,7 +19,7 @@ def ui(self, context):
             "Needs Blender 3.2+"
             if bpy.app.version_string < "3.2.0"
             else (
-                "Downloading..."
+                "Busy..."
                 if props.progress_total != 0
                 else (
                     f"Fetch {props.new_assets} new asset{'s' if props.new_assets != 1 else ''}"
