@@ -24,8 +24,22 @@ def update_asset(context, slug, info, lib_dir, dry_run=False):
     """
     if context.window_manager.pha_props.progress_cancel:
         return (None, None)
+
+    do_download = False
     info_fp = lib_dir / slug / "info.json"
     if not info_fp.exists():
+        do_download = True
+    else:
+        with open(info_fp, "r") as f:
+            old_info = json.load(f)
+        if "files_hash" in old_info and old_info["files_hash"] != info["files_hash"]:
+            log.info(f"{slug} files changed, redownloading")
+            do_download = True
+            # With this logic, if 'files_hash' is not in old_info, we won't know if the files have changed.
+            # This would be the case for assets downloaded before Dec 2022.
+            # TODO we need a separate revalidation operator that re-fetches the info and checks individual file hashes.
+
+    if do_download:
         if dry_run:
             return (None, False)
         error = download_asset(slug, info, lib_dir, info_fp)
@@ -207,6 +221,7 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
 
         def long_task(self, assets, asset_lib):
             assets_to_fetch = {}
+            progress.init(context, 1, word="Checking...")
             for slug, asset in assets.items():
                 error, exists = update_asset(context, slug, asset, Path(asset_lib.path), dry_run=True)
                 if not exists:
