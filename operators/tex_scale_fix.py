@@ -20,6 +20,9 @@ class PHA_OT_tex_scale_fix(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
+        if not hasattr(context, "material"):
+            return False
+
         self.asset_id = is_ph_asset(context, context.material)
         return bool(self.asset_id)
 
