@@ -32,12 +32,13 @@ def update_asset(context, slug, info, lib_dir, dry_run=False):
     else:
         with open(info_fp, "r") as f:
             old_info = json.load(f)
-        if "files_hash" in old_info and old_info["files_hash"] != info["files_hash"]:
+        if "files_hash" not in old_info:
+            # Asset was downloaded before Dec 2022, so it's missing the hash and we don't know if it needs updating.
+            # Try download it again anyway existing files will be skipped and the hash will be added.
+            do_download = True
+        elif old_info["files_hash"] != info["files_hash"]:
             log.info(f"{slug} files changed, redownloading")
             do_download = True
-            # With this logic, if 'files_hash' is not in old_info, we won't know if the files have changed.
-            # This would be the case for assets downloaded before Dec 2022.
-            # TODO we need a separate revalidation operator that re-fetches the info and checks individual file hashes.
 
     if do_download:
         if dry_run:
