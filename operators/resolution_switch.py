@@ -55,7 +55,7 @@ def update_image(img, asset_id, res, lib_path, info, dry_run=False):
     if not new_path.exists():
         if dry_run:
             return False
-        download_file(file_info["url"], new_path)
+        download_file(file_info["url"], new_path, file_info["md5"])
     if dry_run:
         return True
     img.filepath = str(new_path)

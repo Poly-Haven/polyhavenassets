@@ -95,10 +95,10 @@ def download_asset(slug, info, lib_dir, info_fp):
         blend_file = lib_dir / slug / f"{slug}.blend"
         executor = ThreadPoolExecutor(max_workers=10)
         threads = []
-        t = executor.submit(download_file, blend["url"], blend_file)
+        t = executor.submit(download_file, blend["url"], blend_file, blend["md5"])
         threads.append(t)
         for sub_path, incl in blend["include"].items():
-            t = executor.submit(download_file, incl["url"], lib_dir / slug / sub_path)
+            t = executor.submit(download_file, incl["url"], lib_dir / slug / sub_path, incl["md5"])
             threads.append(t)
         while any(t._state != "FINISHED" for t in threads):
             sleep(0.1)  # Block until all downloads are complete
@@ -108,7 +108,7 @@ def download_asset(slug, info, lib_dir, info_fp):
     else:  # HDRIs
         url = info["files"]["hdri"][res]["hdr"]["url"]
         hdr_file = lib_dir / slug / Path(url).name
-        error = download_file(url, hdr_file)
+        error = download_file(url, hdr_file, info["files"]["hdri"][res]["hdr"]["md5"])
         if bpy.context.window_manager.pha_props.progress_cancel:
             return f"Cancelled {slug}"
         if error:

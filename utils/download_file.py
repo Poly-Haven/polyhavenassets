@@ -5,6 +5,7 @@ import threading
 from pathlib import Path
 from random import random
 from time import sleep
+from .filehash import filehash
 from ..constants import REQ_HEADERS
 
 log = logging.getLogger(__name__)
@@ -22,8 +23,15 @@ def get(url, key):
         RES[key] = e
 
 
-def download_file(url, dest):
+def download_file(url, dest, hash=None):
     key = url + str(random() * 1000000)
+
+    if hash and dest.exists():
+        dest_hash = filehash(dest)
+        if dest_hash.lower() == hash.lower():
+            log.info(f"Skipping {Path(url).name}, already downloaded")
+            return None
+
     log.info(f"Downloading {Path(url).name}")
 
     th = threading.Thread(target=get, kwargs={"url": url, "key": key})
