@@ -37,13 +37,11 @@ def update_asset(context, slug, info, lib_dir, revalidate, dry_run=False):
     elif asset_exists:
         with open(info_fp, "r") as f:
             old_info = json.load(f)
-        if "files_hash" not in old_info:
-            # Asset was downloaded before Dec 2022, so it's missing the hash and we don't know if it needs updating.
-            # Try download it again anyway existing files will be skipped and the hash will be added.
-            do_download = True
-        elif old_info["files_hash"] != info["files_hash"]:
-            log.info(f"{slug} files changed, redownloading")
-            do_download = True
+        fields_to_compare = ["files_hash", "categories", "tags", "authors", "name"]
+        for field in fields_to_compare:
+            if field not in old_info or old_info[field] != info[field]:
+                log.info(f"{slug} {field} has changed, updating")
+                do_download = True
 
     if do_download:
         if dry_run:
