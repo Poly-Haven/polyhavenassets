@@ -111,11 +111,17 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
                 mod.levels = subdivisions
                 mod.render_levels = subdivisions
 
-            mod = obj.modifiers.new("Displacement", "DISPLACE")
-            mod.texture_coords = "UV"
-            mod.texture = bl_texture
-            mod.mid_level = midlevel
-            mod.strength = strength
+            needs_displacement = True
+            for mod in obj.modifiers:
+                if mod.type == "DISPLACE":
+                    needs_displacement = False
+                    break
+            if needs_displacement:
+                mod = obj.modifiers.new("Displacement", "DISPLACE")
+                mod.texture_coords = "UV"
+                mod.texture = bl_texture
+                mod.mid_level = midlevel
+                mod.strength = strength
 
         return {"FINISHED"}
 
