@@ -38,7 +38,7 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
     )
 
     @classmethod
-    def find_connected_by_type(node, node_type):
+    def find_connected_by_type(self, node, node_type):
         """Find all nodes of the specified type that are connected to the inputs of the given node"""
 
         def recursive_search(node, node_type):
@@ -78,7 +78,11 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         bl_texture.use_alpha = False
 
         # Get displacement texture from material
-        active_output = material.node_tree.get_output_node(context.scene.render.engine)
+        output_type_map = {
+            "CYCLES": "CYCLES",
+            "BLENDER_EEVEE": "EEVEE",
+        }
+        active_output = material.node_tree.get_output_node(output_type_map[context.scene.render.engine])
         displacement_node = self.find_connected_by_type(active_output, "DISPLACEMENT")[0]
         if not displacement_node:
             self.report({"ERROR"}, "No displacement node found")
