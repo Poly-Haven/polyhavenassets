@@ -12,7 +12,7 @@ def prefs_lib_reminder(self, context):
         row.label(text=text, icon_value=i["exclamation-triangle"].icon_id)
 
     for lib in context.preferences.filepaths.asset_libraries:
-        if lib.name == "Poly Haven":
+        if lib.name.lower() == "poly haven":
             if context.preferences.is_dirty:
                 draw_warning(self, "Don't forget to save your preferences!")
             if context.preferences.active_section == "ADDONS":

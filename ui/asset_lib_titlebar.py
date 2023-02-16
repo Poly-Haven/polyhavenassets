@@ -4,7 +4,7 @@ from .. import icons
 
 def ui(self, context):
 
-    if context.space_data.params.asset_library_ref != "Poly Haven":
+    if context.space_data.params.asset_library_ref.lower() != "poly haven":
         return
 
     props = context.window_manager.pha_props

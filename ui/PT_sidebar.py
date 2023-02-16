@@ -27,7 +27,7 @@ class PHA_PT_sidebar(bpy.types.Panel):
 
     @classmethod
     def poll(self, context):
-        return context.area.ui_type == "ASSETS" and context.space_data.params.asset_library_ref == "Poly Haven"
+        return context.area.ui_type == "ASSETS" and context.space_data.params.asset_library_ref.lower() == "poly haven"
 
     def draw(self, context):
         layout = self.layout
