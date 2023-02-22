@@ -1,6 +1,8 @@
 import bpy
+import bmesh
 import logging
 import math
+from mathutils import Vector
 import numpy
 from ..utils.is_ph_asset import is_ph_asset
 from ..utils.tex_users import tex_users
@@ -28,18 +30,50 @@ class PHA_OT_tex_scale_fix(bpy.types.Operator):
 
     def execute(self, context):
         objects = set(tex_users(context))
-        areas = []
+
+        # Force object mode, to ensure uv map is up to date
+        obj_mode = bpy.context.active_object.mode
+        if obj_mode != "OBJECT":
+            bpy.ops.object.mode_set(mode="OBJECT")
+
+        surface_areas = []
+        uv_areas = []
         for obj in objects:
-            bm = mesh_helpers.bmesh_copy_from_object(obj, apply_modifiers=True)
-            area = mesh_helpers.bmesh_calc_area(bm)
-            areas.append(area)
-            log.debug(f"{obj.name} area: {area}")
+            if obj.scale != Vector((1, 1, 1)):
+                self.report({"WARNING"}, f"{obj.name} has a non-uniform scale, texture scale will be incorrect.")
 
-        average_area = numpy.mean(areas)
-        average_dimension = math.sqrt(average_area)
-        multiplier = average_dimension / (context.material["Real Scale (mm)"][0] / 1000)
-        log.debug(f"Average area: {average_area}, sqrt: {average_dimension}, multiplier: {multiplier}")
+            # Get object surface area
+            bm = bmesh.new()
+            bm.from_mesh(obj.data)
+            object_surface_area = mesh_helpers.bmesh_calc_area(bm)
+            surface_areas.append(object_surface_area)
 
+            # Get UV area (0 - 1)
+            # Thanks to Sietse for the help with some of this!
+            # https://blender.stackexchange.com/questions/279479/how-to-calculate-the-total-uv-area-used
+            uv_layer = bm.loops.layers.uv.active
+            total_uv_area = 0
+            for face in bm.faces:
+                uv_verts = []
+                for loop in face.loops:
+                    uv_verts.append(loop[uv_layer].uv)
+                face_uv_area = mesh_helpers.polygon_area(uv_verts)
+                total_uv_area += face_uv_area
+            uv_areas.append(total_uv_area)
+
+        # Calculate multiplier
+        tex_area = (context.material["Real Scale (mm)"][0] / 1000) * (context.material["Real Scale (mm)"][1] / 1000)
+        average_surface_area = numpy.mean(surface_areas)
+        average_uv_area = numpy.mean(uv_areas)
+        multiplier = math.sqrt(average_surface_area) / math.sqrt(tex_area) / math.sqrt(average_uv_area)
+        log.debug(
+            f"\nAvg surface area: {average_surface_area}"
+            f"\nAvg UV area: {average_uv_area}"
+            f"\nTex area: {tex_area}"
+            f"\nMultiplier: {multiplier}"
+        )
+
+        # Scale texture using multiplier
         for node in context.material.node_tree.nodes:
             if node.type == "MAPPING":
                 node.inputs["Scale"].default_value = (multiplier, multiplier, multiplier)

@@ -1,6 +1,7 @@
 # Taken from Campbell's 3D-Print Toolbox add-on <3
 
 import bmesh
+import numpy as np
 
 
 def bmesh_copy_from_object(obj, transform=True, triangulate=True, apply_modifiers=False):
@@ -65,3 +66,18 @@ def bmesh_to_object(obj, bm):
 def bmesh_calc_area(bm):
     """Calculate the surface area."""
     return sum(f.calc_area() for f in bm.faces)
+
+
+def polygon_area(vertices):
+    """Calculate the area of a polygon given a list of 2D vertex coordinates."""
+    # Ensure that the vertices are in the correct format
+    vertices = np.array(vertices)
+    if vertices.ndim != 2 or vertices.shape[1] != 2:
+        raise ValueError("Input vertices must be a 2D array with shape (n, 2).")
+
+    # Calculate the area of the polygon using the Shoelace formula
+    x = vertices[:, 0]
+    y = vertices[:, 1]
+    area = 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
+
+    return area
