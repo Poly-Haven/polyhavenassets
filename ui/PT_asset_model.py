@@ -52,6 +52,7 @@ class PHA_PT_asset_model_base:
         layout = self.layout
 
         col = layout.column()
+        col.operator("object.duplicates_make_real", text="Edit Asset", icon="GREASEPENCIL")
         asset_info_box.draw(self, context, col, self.asset_id)
 
 
