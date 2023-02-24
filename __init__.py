@@ -6,7 +6,7 @@ bl_info = {
     "blender": (3, 2, 0),
     "location": "Asset Browser",
     "warning": "",
-    "doc_url": "https://github.com/Poly-Haven/polyhavenassets/wiki",
+    "doc_url": "https://docs.polyhaven.com/en/guides/blender-addon",
     "tracker_url": "https://github.com/Poly-Haven/polyhavenassets/issues",
     "category": "Import-Export",
 }
