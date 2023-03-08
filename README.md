@@ -14,7 +14,7 @@ A Blender add-on to integrate our assets natively in the asset browser.
 
 ## Installation
 
-This add-on is meant to be purchased on the [Blender Market](https://blendermarket.com/products/poly-haven-asset-browser) or through [Patreon](https://www.patreon.com/posts/70974704) to support our work making new assets. However if you would like to try-before-you-buy, you can also [download it here for free]((https://github.com/Poly-Haven/polyhavenassets/releases/latest/download/polyhavenassets_github.zip)).
+This add-on is meant to be purchased on the [Blender Market](https://blendermarket.com/products/poly-haven-asset-browser) or through [Patreon](https://www.patreon.com/posts/70974704) to support our work making new assets. However if you would like to try-before-you-buy, you can also [download it here for free](https://github.com/Poly-Haven/polyhavenassets/releases/latest/download/polyhavenassets_github.zip).
 
 If you like it, please consider [purchasing it](https://blendermarket.com/products/poly-haven-asset-browser) to support our work on future assets :) Everyone tells me $30 is a steal for over 1000 high quality assets. You'll also get **early access to upcoming content** months before everyone else.
 
