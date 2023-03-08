@@ -10,28 +10,30 @@ A Blender add-on to integrate our assets natively in the asset browser.
 2. Lets you swap the resolution of an asset to higher/lower resolutions any time after import (most are at least 8K).
 3. Set the texture mapping scale to the correct real-world size according to the surfaces you've applied it to.
 4. One-click setup of texture displacement with adaptive subdivision.
-5. Simple HDRI rotation and brightness sliders.
+5. Simple HDRI rotation, brightness, and color temperature sliders.
 
 ## Installation
 
-If you purchased this add-on on the [Blender Market](https://blendermarket.com/products/poly-haven-asset-browser) or got it through [Patreon](https://www.patreon.com/posts/70974704), simply install the zip you downloaded there, no need to follow these instructions!
+This add-on is meant to be purchased on the [Blender Market](https://blendermarket.com/products/poly-haven-asset-browser) or through [Patreon](https://www.patreon.com/posts/70974704) to support our work making new assets. However if you would like to try-before-you-buy, you can also [download it here for free]((https://github.com/Poly-Haven/polyhavenassets/releases/latest/download/polyhavenassets_github.zip)).
 
-If not, follow the instructions below to download it for free. **If you like it, please consider [purchasing it](https://blendermarket.com/products/poly-haven-asset-browser)** to support our work on future assets :) Everyone tells me $30 is a steal for over 1000 high quality assets. You'll also get early access to upcoming content, sometimes months before everyone else.
+If you like it, please consider [purchasing it](https://blendermarket.com/products/poly-haven-asset-browser) to support our work on future assets :) Everyone tells me $30 is a steal for over 1000 high quality assets. You'll also get **early access to upcoming content** months before everyone else.
 
-1. [Visit the releases page](https://github.com/Poly-Haven/polyhavenassets/tags) and click the `zip` button for the latest version.
-2. Install this zip file from Blender's User Preferences.
-3. Locate the Blender Addons Folder  
-Windows: `%appdata%\Blender Foundation\Blender\x.x\scripts\addons\`  
-Mac: `~/Library/Application Support/Blender/x.x/scripts/addons/`  
-Linux: `~/.config/blender/x.x/scripts/addons/`
-5. **Rename the installed folder** from `polyhavenassets-x.x.x` to just `polyhavenassets` without the version number at the end.
-6. Click the `Refresh` button at the top right of the preferences and enable the add-on
+1. Download the ZIP file...
+    * From your [Blender Market account page](https://blendermarket.com/account/orders) if you purchased it there ($30).
+    * From [this post on Patreon](https://www.patreon.com/posts/blender-asset-70974704) if you support us there ($5/m).
+    * From [the latest release](https://github.com/Poly-Haven/polyhavenassets/releases/latest/download/polyhavenassets_github.zip) on GitHub (free).
+2. Install the zip file from Blender's User Preferences.
+3. Enable the add-on.
+
+For more detailed instructions, please check our [video guide and documentation](https://docs.polyhaven.com/en/guides/blender-addon).
 
 ### Updating:
 
 To check for a new version of the add-on, simply visit the Preferences and click the *Check now for update* button.
 
 ## Usage
+
+> [A more detailed user guide and video demo is available here](https://docs.polyhaven.com/en/guides/blender-addon).
 
 1. After enabling the add-on, [add a new Asset Library](https://file.coffee/u/sPrJY2-9578l2WjmmOA3n.png) in your preferences called `Poly Haven`. This is where assets will be downloaded to.
 2. Open the asset browser editor and select the Poly Haven library at the top left.
