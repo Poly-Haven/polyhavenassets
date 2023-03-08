@@ -63,6 +63,8 @@ class PHA_OT_tex_scale_fix(bpy.types.Operator):
 
         # Calculate multiplier
         tex_area = (context.material["Real Scale (mm)"][0] / 1000) * (context.material["Real Scale (mm)"][1] / 1000)
+        aspect_ratio = context.material["Real Scale (mm)"][1] / context.material["Real Scale (mm)"][0]
+        sqrt_aspect_ratio = math.sqrt(aspect_ratio)
         average_surface_area = numpy.mean(surface_areas)
         average_uv_area = numpy.mean(uv_areas)
         multiplier = math.sqrt(average_surface_area) / math.sqrt(tex_area) / math.sqrt(average_uv_area)
@@ -76,15 +78,16 @@ class PHA_OT_tex_scale_fix(bpy.types.Operator):
         # Scale texture using multiplier
         for node in context.material.node_tree.nodes:
             if node.type == "MAPPING":
-                node.inputs["Scale"].default_value = (multiplier, multiplier, multiplier)
+                node.inputs["Scale"].default_value.x = multiplier * sqrt_aspect_ratio
+                node.inputs["Scale"].default_value.y = multiplier / sqrt_aspect_ratio
         for obj in objects:
             for mod in obj.modifiers:
                 if mod.type == "DISPLACE":
                     try:
                         img = mod.texture.image
                         if is_ph_asset(context, img):
-                            mod.texture.crop_max_x = multiplier
-                            mod.texture.crop_max_y = multiplier
+                            mod.texture.crop_max_x = multiplier * sqrt_aspect_ratio
+                            mod.texture.crop_max_y = multiplier / sqrt_aspect_ratio
                     except AttributeError:
                         log.debug("No image on displacement modifier")
 
