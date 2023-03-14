@@ -6,7 +6,7 @@ A Blender add-on to integrate our assets natively in the asset browser.
 
 ## Features
 
-1. Downloads all assets from [Poly Haven](https://polyhaven.com/) (at 1k resolution by default), and list them under their respective categories in the Asset Browser.
+1. Downloads all assets from [Poly Haven](https://polyhaven.com/), and list them under their respective categories in the Asset Browser.
 2. Lets you swap the resolution of an asset to higher/lower resolutions any time after import (most are at least 8K).
 3. Set the texture mapping scale to the correct real-world size according to the surfaces you've applied it to.
 4. One-click setup of texture displacement with adaptive subdivision.
@@ -16,7 +16,7 @@ A Blender add-on to integrate our assets natively in the asset browser.
 
 This add-on is meant to be purchased on the [Blender Market](https://blendermarket.com/products/poly-haven-asset-browser) or through [Patreon](https://www.patreon.com/posts/70974704) to support our work making new assets. However if you would like to try-before-you-buy, you can also [download it here for free](https://github.com/Poly-Haven/polyhavenassets/releases/latest/download/polyhavenassets_github.zip).
 
-If you like it, please consider [purchasing it](https://blendermarket.com/products/poly-haven-asset-browser) to support our work on future assets :) Everyone tells me $30 is a steal for over 1000 high quality assets. You'll also get **early access to upcoming content** months before everyone else.
+If you like it, please consider [purchasing it](https://blendermarket.com/products/poly-haven-asset-browser) to support our work on future assets :) Everyone tells me $30 is a steal for over 1000 high quality assets. By purchasing it, you'll also get **early access to upcoming content** months before everyone else.
 
 1. Download the ZIP file...
     * From your [Blender Market account page](https://blendermarket.com/account/orders) if you purchased it there ($30).
