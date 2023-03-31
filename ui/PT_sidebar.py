@@ -38,7 +38,7 @@ class PHA_PT_sidebar(bpy.types.Panel):
             row = col.row()
             row.label(text="Recently downloaded:", icon="IMPORT")
             if context.space_data.params.filter_search:
-                row.operator("pha.go_to_asset", text="", icon="PANEL_CLOSE").asset = ""
+                row.operator("pha.go_to_asset", text="Clear Search", icon="PANEL_CLOSE").asset = ""
             list_size = 10
             recently_downloaded = list(reversed(ephemeral.recently_downloaded))
             for asset in (

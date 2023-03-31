@@ -13,9 +13,13 @@ class PHA_OT_go_to_asset(bpy.types.Operator):
     asset: bpy.props.StringProperty()
 
     def execute(self, context):
-        if context.space_data.params.filter_search == self.asset:
-            # User might have clicked on the button twice, thinking it didn't work.
-            self.report({"INFO"}, "If no asset is shown, try selecting the 'ALL' catalog.")
-        context.space_data.params.filter_search = self.asset
+        if bpy.app.version_string >= "3.5.0":
+            context.space_data.params.filter_search = self.asset
+            context.space_data.params.catalog_id = ""  # 'All' catalog
+        else:
+            if context.space_data.params.filter_search == self.asset:
+                # User might have clicked on the button twice, thinking it didn't work.
+                self.report({"INFO"}, "If no asset is shown, try selecting the 'ALL' catalog.")
+            context.space_data.params.filter_search = self.asset
 
         return {"FINISHED"}
