@@ -7,6 +7,7 @@ from time import sleep
 from ..utils.download_file import download_file
 from ..utils.get_asset_info import get_asset_info
 from ..utils.get_asset_lib import get_asset_lib
+from ..utils.abspath import abspath
 from ..utils import progress
 
 log = logging.getLogger(__name__)
@@ -49,7 +50,7 @@ def update_image(img, asset_id, res, lib_path, info, dry_run=False):
     Update image with new resolution.
     If dry_run is True, return a boolean indicating whether the image exists.
     """
-    rel_path = Path(bpy.path.abspath(img.filepath)).resolve().relative_to(lib_path.resolve() / asset_id).as_posix()
+    rel_path = abspath(img.filepath).relative_to(lib_path.resolve() / asset_id).as_posix()
     new_path, file_info = get_matching_resolutions(info, res, rel_path)
     new_path = lib_path / asset_id / new_path
     if not new_path.exists():
@@ -126,7 +127,7 @@ class PHA_OT_resolution_switch(bpy.types.Operator):
                 'First open Preferences > File Paths and create an asset library named "Poly Haven"',
             )
             return {"CANCELLED"}
-        if not Path(asset_lib.path).exists():
+        if not abspath(asset_lib.path).exists():
             self.report(
                 {"ERROR"},
                 "Asset library path not found! Please check the folder still exists",
@@ -157,7 +158,7 @@ class PHA_OT_resolution_switch(bpy.types.Operator):
         datablock["res"] = self.res
 
         images = []
-        lib_path = Path(asset_lib.path)
+        lib_path = abspath(asset_lib.path)
         for tree in trees:
             images += get_images_in_tree(tree)
         images = list(set(images))

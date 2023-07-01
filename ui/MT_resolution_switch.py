@@ -1,9 +1,9 @@
 import bpy
 import logging
-from pathlib import Path
 from ..utils.is_ph_asset import is_ph_asset
 from ..utils.get_asset_info import get_asset_info
 from ..utils.get_asset_lib import get_asset_lib
+from ..utils.abspath import abspath
 from ..utils.filesize import filesize
 
 log = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ def _draw(self, context, asset):
         files = get_asset_info(context, asset_id)["files"]["blend"]
     sorted_resolutions = sorted(files.keys(), key=lambda x: int(x[:-1]))
 
-    asset_lib_path = Path(get_asset_lib(context).path)
+    asset_lib_path = abspath(get_asset_lib(context).path)
 
     for res in sorted_resolutions:
         local = True

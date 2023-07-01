@@ -12,6 +12,7 @@ from .. import ephemeral
 from ..utils.download_file import download_file
 from ..utils.get_asset_lib import get_asset_lib
 from ..utils.get_asset_list import get_asset_list
+from ..utils.abspath import abspath
 from ..utils import progress
 
 log = logging.getLogger(__name__)
@@ -229,14 +230,16 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
             assets_to_fetch = {}
             progress.init(context, 1, word="Checking...")
             for slug, asset in assets.items():
-                error, exists = update_asset(context, slug, asset, Path(asset_lib.path), self.revalidate, dry_run=True)
+                error, exists = update_asset(
+                    context, slug, asset, abspath(asset_lib.path), self.revalidate, dry_run=True
+                )
                 if not exists:
                     assets_to_fetch[slug] = asset
             progress.init(context, len(assets_to_fetch), word="Checking" if self.revalidate else "Downloading")
             executor = ThreadPoolExecutor(max_workers=20)
             threads = []
             for slug, asset in assets_to_fetch.items():
-                t = executor.submit(update_asset, context, slug, asset, Path(asset_lib.path), self.revalidate)
+                t = executor.submit(update_asset, context, slug, asset, abspath(asset_lib.path), self.revalidate)
                 threads.append(t)
 
             finished_threads = []
@@ -265,7 +268,7 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
                 'First open Preferences > File Paths and create an asset library named "Poly Haven"',
             )
             return {"CANCELLED"}
-        if not Path(asset_lib.path).exists():
+        if not abspath(asset_lib.path).exists():
             self.report(
                 {"ERROR"},
                 "Asset library path not found! Please check the folder still exists",
@@ -284,7 +287,7 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
             self.report({"ERROR"}, error)
             return {"CANCELLED"}
 
-        catalog_file = Path(asset_lib.path) / "blender_assets.cats.txt"
+        catalog_file = abspath(asset_lib.path) / "blender_assets.cats.txt"
         if not catalog_file.exists():
             catalog_file.parent.mkdir(parents=True, exist_ok=True)  # Juuuust in case the library folder was removed
             default_catalog_file = Path(__file__).parents[1] / "blender_assets.cats.txt"

@@ -1,6 +1,7 @@
 import bpy
 import sys
 from pathlib import Path
+from ..utils.abspath import abspath
 
 TYPES = {
     "0": "HDRIs",
@@ -117,7 +118,7 @@ for img in bpy.data.images:
     if not img.filepath:
         continue
     try:
-        rel = Path(bpy.path.abspath(img.filepath)).resolve().relative_to(out_file.parent)
+        rel = abspath(img.filepath).relative_to(out_file.parent)
         img.filepath = f"//{rel.as_posix()}"
     except ValueError:
         print(f"WARN: Could not make {img.name} relative to {out_file.parent}")
