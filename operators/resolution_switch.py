@@ -149,6 +149,8 @@ class PHA_OT_resolution_switch(bpy.types.Operator):
             if datablock.instance_collection:
                 for obj in datablock.instance_collection.all_objects:
                     for mat in obj.material_slots:
+                        if not hasattr(mat.material, "node_tree"):
+                            continue
                         trees.append(mat.material.node_tree)
                         mat.material["res"] = self.res
             else:
