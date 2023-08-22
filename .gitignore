@@ -5,6 +5,7 @@ desktop.ini
 polyhavenassets_updater/
 early_access.json
 build_release.py
+build_release.bat
 polyhavenassets*.zip
 
 # ------------------------ Pre-populated by GitHub template ------------------------
