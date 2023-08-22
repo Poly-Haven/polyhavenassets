@@ -109,6 +109,9 @@ def download_asset(slug, info, lib_dir, info_fp):
             sleep(0.1)  # Block until all downloads are complete
         if bpy.context.window_manager.pha_props.progress_cancel:
             return f"Cancelled {slug}"
+        thread_errors = [t.result() for t in threads if t.result() is not None]
+        if any(thread_errors):
+            return thread_errors[0]
         mark_asset(blend_file, slug, info, thumbnail_file)
     else:  # HDRIs
         url = info["files"]["hdri"][res]["hdr"]["url"]
