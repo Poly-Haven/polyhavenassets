@@ -12,5 +12,5 @@ class PHA_MT_pull_by_type(bpy.types.Menu):
             op.revalidate = False
         self.layout.separator()
         op = self.layout.operator("pha.pull_from_polyhaven", text="Revalidate Files")
-        op.asset_type = asset_type.lower()
+        op.asset_type = 'all'
         op.revalidate = True
