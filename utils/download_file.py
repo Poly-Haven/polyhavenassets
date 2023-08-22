@@ -23,7 +23,7 @@ def get(url, key):
         RES[key] = e
 
 
-def download_file(url, dest, hash=None):
+def download_file(url, dest, hash=None, retries=3):
     key = url + str(random() * 1000000)
 
     if hash and dest.exists():
@@ -61,5 +61,19 @@ def download_file(url, dest, hash=None):
 
     with dest.open("wb") as f:
         f.write(res.content)
+
+    # Check hash again in case of incomplete download
+    if hash and dest.exists():
+        dest_hash = filehash(dest)
+        if dest_hash.lower() != hash.lower():
+            if retries > 0:
+                log.warn(f"Error downloading {url}, hash mismatch. Retrying ({3 - retries + 1}/3)")
+                # Wait 5s before retrying
+                sleep(5)
+                return download_file(url, dest, hash, retries=retries - 1)
+            else:
+                msg = f"Error downloading {url}, hash mismatch."
+                log.error(msg)
+                return msg
 
     return None
