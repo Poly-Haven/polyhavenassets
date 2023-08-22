@@ -37,7 +37,13 @@ def update_asset(context, slug, info, lib_dir, revalidate, dry_run=False):
         do_download = True
     elif asset_exists:
         with open(info_fp, "r") as f:
-            old_info = json.load(f)
+            try:
+                old_info = json.load(f)
+            except json.decoder.JSONDecodeError:
+                error = f"Error parsing {info_fp}, forcing download"
+                log.error(error)
+                do_download = True
+                old_info = {}
         fields_to_compare = ["files_hash", "categories", "tags", "authors", "name"]
         for field in fields_to_compare:
             if field not in old_info or old_info[field] != info[field]:
