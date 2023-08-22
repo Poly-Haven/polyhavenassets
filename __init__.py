@@ -86,6 +86,9 @@ class PHAPreferences(bpy.types.AddonPreferences):
         row = layout.row()
         row.prop(self, "use_alt_cdn")
         row.prop(self, "disable_ssl_verify")
+        op = row.operator("pha.pull_from_polyhaven", text="Revalidate All Assets")
+        op.asset_type = 'all'
+        op.revalidate = True
 
         ui.prefs_lib_reminder.prefs_lib_reminder(self, context)
 
