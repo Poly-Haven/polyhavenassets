@@ -13,7 +13,7 @@ def ui(self, context):
     row = sub.row(align=True)
     row.use_property_split = True
     i = icons.get_icons()
-    row.operator(
+    op = row.operator(
         "pha.pull_from_polyhaven",
         text=(
             "Needs Blender 3.2+"
@@ -29,6 +29,8 @@ def ui(self, context):
             )
         ),
         icon_value=i["polyhaven"].icon_id,
-    ).asset_type = "all"
+    )
+    op.asset_type = "all"
+    op.revalidate = False
     b = row.box()  # Force some kind of emboss effect
     b.menu("PHA_MT_pull_by_type", text="", icon="DOWNARROW_HLT")
