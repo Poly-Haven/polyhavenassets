@@ -3,7 +3,9 @@ from .. import icons
 
 def ui(self, context):
 
-    if context.space_data.params.asset_library_ref.lower() != "poly haven":
+    lib_ref = getattr(context.space_data.params, "asset_library_ref", None)  # Blender < 4.0
+    lib_ref = getattr(context.space_data.params, "asset_library_reference", lib_ref)  # Blender > 4.0
+    if lib_ref.lower() != "poly haven":
         return
 
     layout = self.layout
