@@ -89,11 +89,16 @@ def download_asset(slug, info, lib_dir, info_fp):
         return f"Cancelled {slug}"
 
     thumbnail_file = lib_dir / slug / "thumbnail.webp"
-    cdn = "cdn.polyhaven.org" if prefs.use_alt_cdn else "cdn.polyhaven.com"
-    error = download_file(
-        f"https://{cdn}/asset_img/thumbs/{slug}.png?width=256&height=256",
-        thumbnail_file,
-    )
+    url_path = f"/asset_img/thumbs/{slug}.png?width=256&height=256"
+    error = download_file("https://cdn.polyhaven.com" + url_path, thumbnail_file)
+
+    if bpy.context.window_manager.pha_props.progress_cancel:
+        return f"Cancelled {slug}"
+
+    if error:
+        # Retry with alternate CDN
+        log.debug(f"Failed to get {slug} thumbnail from cdn.polyhaven.com, retrying with cdn.polyhaven.org")
+        error = download_file("https://cdn.polyhaven.org" + url_path, thumbnail_file)
 
     if bpy.context.window_manager.pha_props.progress_cancel:
         return f"Cancelled {slug}"

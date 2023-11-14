@@ -51,11 +51,6 @@ class PHAPreferences(bpy.types.AddonPreferences):
         description="Disable SSL verification when fetching assets. Use this if you are getting SSL errors",
         default=False,
     )
-    use_alt_cdn = bpy.props.BoolProperty(
-        name="Use alternative CDN",
-        description="Try enable this if you're experiencing errors connecting to cdn.polyhaven.com",
-        default=False,
-    )
 
     # Add-on Updater Prefs
     auto_check_update = bpy.props.BoolProperty(
