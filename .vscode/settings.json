@@ -3,19 +3,6 @@
         120
     ],
     "editor.formatOnSave": true,
-    "python.linting.pylintEnabled": false,
-    "python.linting.pycodestyleEnabled": false,
-    "python.linting.enabled": true,
-    "python.linting.flake8Args": [
-        "--max-line-length=120",
-        "--ignore=W293,E701,E221,E402,E203,F821,F722"
-    ],
-    "python.formatting.provider": "black",
-    "python.formatting.blackArgs": [
-        "--line-length",
-        "120"
-    ],
-    "python.linting.flake8Enabled": true,
     "files.exclude": {
         "**/__pycache__": true,
         ".idea": true
