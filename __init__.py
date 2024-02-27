@@ -18,12 +18,20 @@ if "bpy" not in locals():
     from . import icons
     from . import addon_updater_ops
 else:
-    import imp
+    try:
+        import importlib
+        importer = importlib
+    except ImportError:
+        try:
+            import imp
+            importer = imp
+        except ImportError:
+            raise ModuleNotFoundError("Cannot find the imp/importlib module")
 
-    imp.reload(ui)
-    imp.reload(operators)
-    imp.reload(icons)
-    imp.reload(addon_updater_ops)
+    importer.reload(ui)
+    importer.reload(operators)
+    importer.reload(icons)
+    importer.reload(addon_updater_ops)
 
 import bpy
 import threading
