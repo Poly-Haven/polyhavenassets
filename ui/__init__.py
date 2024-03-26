@@ -1,4 +1,14 @@
-import imp
+try:
+    import importlib
+
+    importer = importlib
+except ImportError:
+    try:
+        import imp
+
+        importer = imp
+    except ImportError:
+        raise ModuleNotFoundError("Cannot find the imp/importlib module")
 
 from . import prefs_lib_reminder
 from . import asset_lib_support
@@ -11,16 +21,16 @@ from . import PT_sidebar
 from . import MT_resolution_switch
 from . import MT_pull_by_type
 
-imp.reload(prefs_lib_reminder)
-imp.reload(asset_lib_support)
-imp.reload(asset_lib_titlebar)
-imp.reload(statusbar)
-imp.reload(PT_asset_hdri)
-imp.reload(PT_asset_model)
-imp.reload(PT_asset_texture)
-imp.reload(PT_sidebar)
-imp.reload(MT_resolution_switch)
-imp.reload(MT_pull_by_type)
+importer.reload(prefs_lib_reminder)
+importer.reload(asset_lib_support)
+importer.reload(asset_lib_titlebar)
+importer.reload(statusbar)
+importer.reload(PT_asset_hdri)
+importer.reload(PT_asset_model)
+importer.reload(PT_asset_texture)
+importer.reload(PT_sidebar)
+importer.reload(MT_resolution_switch)
+importer.reload(MT_pull_by_type)
 
 classes = [
     PT_asset_hdri.PHA_PT_asset_hdri,
