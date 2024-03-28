@@ -2,7 +2,7 @@ bl_info = {
     "name": "Poly Haven Assets",
     "description": "Dynamically adds all HDRIs, materials and 3D models from polyhaven.com into the Asset Browser",
     "author": "Poly Haven",
-    "version": (1, 1, 6),
+    "version": (1, 1, 7),
     "blender": (3, 2, 0),
     "location": "Asset Browser",
     "warning": "",
@@ -20,10 +20,12 @@ if "bpy" not in locals():
 else:
     try:
         import importlib
+
         importer = importlib
     except ImportError:
         try:
             import imp
+
             importer = imp
         except ImportError:
             raise ModuleNotFoundError("Cannot find the imp/importlib module")
