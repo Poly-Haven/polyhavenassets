@@ -73,7 +73,10 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         """Add subdiv & a displacement modifiers to *physically* displace the mesh"""
         objects = tex_users(context)
         material: bpy.types.Material = context.material
-        material.cycles.displacement_method = "BUMP"
+        if hasattr(material, "displacement_method"):
+            material.displacement_method = "BUMP"  # 4.1+ compatibility
+        else:
+            material.cycles.displacement_method = "BUMP"  # Pre-4.1 compatibility
         bl_texture: bpy.types.ImageTexture = context.blend_data.textures.new(material.name + "_disp", "IMAGE")
         bl_texture.use_alpha = False
 
