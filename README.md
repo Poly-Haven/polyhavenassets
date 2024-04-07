@@ -16,7 +16,7 @@ A Blender add-on to integrate our assets natively in the asset browser.
 
 This add-on is meant to be purchased on the [Blender Market](https://blendermarket.com/products/poly-haven-asset-browser) or through [Patreon](https://www.patreon.com/posts/70974704) to support our work making new assets. However if you would like to try-before-you-buy, you can also [download it here for free](https://github.com/Poly-Haven/polyhavenassets/releases/latest/download/polyhavenassets_github.zip).
 
-If you like it, please consider [purchasing it](https://blendermarket.com/products/poly-haven-asset-browser) to support our work on future assets :) Everyone tells me $30 is a steal for over 1000 high quality assets. By purchasing it, you'll also get **early access to upcoming content** months before everyone else.
+If you like it, please consider [purchasing it](https://blendermarket.com/products/poly-haven-asset-browser) to support our work on future assets :) Everyone tells me $30 is a steal for over 1500 high quality assets. By purchasing it, you'll also get **early access to upcoming content** months before everyone else.
 
 1. Download the ZIP file...
     * From your [Blender Market account page](https://blendermarket.com/account/orders) if you purchased it there ($30).
@@ -44,4 +44,4 @@ To check for a new version of the add-on, simply visit the Preferences and click
 ## Known Issues
 
 1. After installing and downloading assets for the first time, the list of catalogs may not be updated automatically. Simply restart Blender and you should see them.
-2. It would be nice if users didn't have to download all ~1000 of our assets beforehand, but rather have them download dynamically when they're dragged into the scene. Right now it doesn't seem like this is possible in the Blender API, but it should be possible sometime in the future.
+2. It would be nice if users didn't have to download all ~1500 of our assets beforehand, but rather have them download dynamically when they're dragged into the scene. Right now it doesn't seem like this is possible in the Blender API, but it should be possible sometime in the future.
