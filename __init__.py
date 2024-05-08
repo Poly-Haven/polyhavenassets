@@ -37,8 +37,11 @@ else:
 
 import bpy
 import threading
+import logging
 from bpy.app.handlers import persistent
 from .utils.check_for_new_assets import check_for_new_assets
+
+log = logging.getLogger(__name__)
 
 
 class PHAProperties(bpy.types.PropertyGroup):
@@ -108,6 +111,37 @@ def hand_check_new_assets(dummy):
 
 
 def register():
+
+    # Check for incorrect installation (e.g. __package__ is not polyhavenassets)
+    if __package__ != "polyhavenassets":
+        # Try to auto-rename the folder, if one doesn't already exist
+        import os
+        import shutil
+
+        log.warning(f"Incorrect installtion detected, attempting auto repair (rename {__package__} to polyhavenassets)")
+        addons_dir = os.path.dirname(os.path.dirname(__file__))
+        if not os.path.exists(os.path.join(addons_dir, "polyhavenassets")):
+            try:
+                shutil.move(
+                    os.path.join(addons_dir, __package__),
+                    os.path.join(addons_dir, "polyhavenassets"),
+                )
+            except Exception as e:
+                log.error(f"Auto repair failed: {e}\nPlease rename the folder manually to 'polyhavenassets'")
+                raise RuntimeError(
+                    "Incorrect installation detected, please rename the install folder to 'polyhavenassets'"
+                ) from None
+            log.info("Auto repair successful, please try enabling again")
+            raise RuntimeError(
+                "\n\nThe add-on was incorrectly installed, but this has been repaired automatically."
+                "\nPlease click 'Refresh' above and try enabling it again."
+            ) from None
+        else:
+            log.error("Auto repair failed: 'polyhavenassets' folder already exists")
+            raise RuntimeError(
+                "Incorrect installation detected, please rename the install folder to 'polyhavenassets'"
+            ) from None
+
     try:
         addon_updater_ops.register(bl_info)
     except ValueError as e:
