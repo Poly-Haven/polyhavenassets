@@ -108,13 +108,44 @@ def hand_check_new_assets(dummy):
 
 
 def register():
-    addon_updater_ops.register(bl_info)
+    try:
+        addon_updater_ops.register(bl_info)
+    except ValueError as e:
+        if "register_class(...): already registered as a subclass" in str(e):
+            # Try to unregister it first, and then register it again
+            try:
+                addon_updater_ops.unregister()
+                addon_updater_ops.register(bl_info)
+            except ValueError:
+                raise RuntimeError(
+                    "\nFailed to enable add-on because some identical classes are already registered."
+                    "\nPlease try restart Blender, or report this issue to us"
+                ) from None
     icons.previews_register()
 
-    from bpy.utils import register_class
+    from bpy.utils import register_class, unregister_class
 
     for cls in classes:
-        register_class(cls)
+        try:
+            register_class(cls)
+        except RuntimeError as e:
+            if "Error: Registering panel class: parent 'CYCLES_PT_" in str(e):
+                raise RuntimeError(
+                    "\nThe Cycles add-on must first be enabled in order to use the Poly Haven Assets add-on"
+                ) from None
+            else:
+                raise e
+        except ValueError as e:
+            if "register_class(...): already registered as a subclass" in str(e):
+                # Try to unregister it first, and then register it again
+                try:
+                    unregister_class(cls)
+                    register_class(cls)
+                except ValueError:
+                    raise RuntimeError(
+                        "\nFailed to enable add-on because some identical classes are already registered."
+                        "\nPlease try restart Blender, or report this issue to us"
+                    ) from None
 
     bpy.types.USERPREF_PT_file_paths_asset_libraries.append(ui.prefs_lib_reminder.prefs_lib_reminder)
     bpy.types.ASSETBROWSER_PT_metadata.append(ui.asset_lib_support.ui)
