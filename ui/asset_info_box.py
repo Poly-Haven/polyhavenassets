@@ -6,6 +6,7 @@ import threading
 from ..constants import REQ_HEADERS
 from .. import icons
 from ..utils.get_asset_info import get_asset_info
+from .. import __package__ as base_package
 
 log = logging.getLogger(__name__)
 
@@ -17,7 +18,7 @@ SPONSOR_INFO = {}
 def get_sponsor_info(uid):
     log.debug(f"GETTING SPONSOR INFO {uid}")
     url = f"https://api.polyhaven.com/sponsor/{uid}"
-    verify_ssl = not bpy.context.preferences.addons["polyhavenassets"].preferences.disable_ssl_verify
+    verify_ssl = not bpy.context.preferences.addons[base_package].preferences.disable_ssl_verify
     res = requests.get(url, headers=REQ_HEADERS, verify=verify_ssl)
 
     if res.status_code != 200:
@@ -56,9 +57,9 @@ def draw(self, context, layout, asset_id):
         row = col.row(align=True)
         row.alignment = "LEFT"
         row.label(text=f"GPS: {gps[0]:.6f}, {gps[1]:.6f}")
-        row.operator(
-            "wm.url_open", text="", icon="LINKED", emboss=False
-        ).url = f"https://www.openstreetmap.org/?mlat={gps[0]}&mlon={gps[1]}&zoom=14#map=13/{gps[0]}/{gps[1]}"
+        row.operator("wm.url_open", text="", icon="LINKED", emboss=False).url = (
+            f"https://www.openstreetmap.org/?mlat={gps[0]}&mlon={gps[1]}&zoom=14#map=13/{gps[0]}/{gps[1]}"
+        )
 
     col.separator()
     row = col.row(align=True)
@@ -89,9 +90,9 @@ def draw(self, context, layout, asset_id):
                 row.operator("wm.url_open", text="", icon="LINKED", emboss=False).url = sponsor_data["url"]
 
     row = box.row()
-    row.operator(
-        "wm.url_open", text="View on polyhaven.com", icon="URL"
-    ).url = f"https://polyhaven.com/a/{self.asset_id}"
-    row.operator(
-        "wm.url_open", text="Support us!", icon_value=i["patreon"].icon_id
-    ).url = "https://www.patreon.com/polyhaven/overview"
+    row.operator("wm.url_open", text="View on polyhaven.com", icon="URL").url = (
+        f"https://polyhaven.com/a/{self.asset_id}"
+    )
+    row.operator("wm.url_open", text="Support us!", icon_value=i["patreon"].icon_id).url = (
+        "https://www.patreon.com/polyhaven/overview"
+    )

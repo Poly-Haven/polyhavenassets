@@ -14,6 +14,7 @@ from ..utils.get_asset_lib import get_asset_lib
 from ..utils.get_asset_list import get_asset_list
 from ..utils.abspath import abspath
 from ..utils import progress
+from .. import __package__ as base_package
 
 log = logging.getLogger(__name__)
 
@@ -64,7 +65,7 @@ def update_asset(context, slug, info, lib_dir, revalidate, dry_run=False):
 
 
 def download_asset(slug, info, lib_dir, info_fp):
-    prefs = bpy.context.preferences.addons["polyhavenassets"].preferences
+    prefs = bpy.context.preferences.addons[base_package].preferences
     url = f"https://api.polyhaven.com/files/{slug}"
     verify_ssl = not prefs.disable_ssl_verify
     try:

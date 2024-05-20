@@ -7,6 +7,7 @@ from random import random
 from time import sleep
 from .filehash import filehash
 from ..constants import REQ_HEADERS
+from .. import __package__ as base_package
 
 log = logging.getLogger(__name__)
 
@@ -15,7 +16,7 @@ RES = {}
 
 def get(url, key):
     global RES
-    verify_ssl = not bpy.context.preferences.addons["polyhavenassets"].preferences.disable_ssl_verify
+    verify_ssl = not bpy.context.preferences.addons[base_package].preferences.disable_ssl_verify
     try:
         RES[key] = requests.get(url, headers=REQ_HEADERS, verify=verify_ssl)
     except Exception as e:
