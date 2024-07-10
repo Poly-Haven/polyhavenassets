@@ -84,6 +84,7 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         output_type_map = {
             "CYCLES": "CYCLES",
             "BLENDER_EEVEE": "EEVEE",
+            "BLENDER_EEVEE_NEXT": "EEVEE",
         }
         active_output = material.node_tree.get_output_node(output_type_map[context.scene.render.engine])
         displacement_node = self.find_connected_by_type(active_output, "DISPLACEMENT")[0]
