@@ -4,6 +4,7 @@ from .. import ephemeral
 from .. import icons
 from ..utils.dpi_factor import dpi_factor
 from ..utils.early_access import early_access
+from .. import addon_updater_ops
 
 
 def paragraph(paragraph, width, layout):
@@ -32,6 +33,7 @@ class PHA_PT_sidebar(bpy.types.Panel):
         return context.area.ui_type == "ASSETS" and lib_ref.lower() == "poly haven"
 
     def draw(self, context):
+        addon_updater_ops.check_for_update_background()
         layout = self.layout
 
         if ephemeral.recently_downloaded:
@@ -70,9 +72,9 @@ class PHA_PT_sidebar(bpy.types.Panel):
             row = col.row()
             row.alignment = "CENTER"
             row.scale_y = 1.5
-            row.operator(
-                "wm.url_open", text="Support us!", icon_value=i["heart"].icon_id
-            ).url = "https://www.patreon.com/polyhaven/overview"
+            row.operator("wm.url_open", text="Support us!", icon_value=i["heart"].icon_id).url = (
+                "https://www.patreon.com/polyhaven/overview"
+            )
             paragraph(
                 (
                     "You might have downloaded this add-on for free, but Poly Haven needs funds to continue "
@@ -90,3 +92,5 @@ class PHA_PT_sidebar(bpy.types.Panel):
                 col,
             )
             col.separator()
+
+        addon_updater_ops.update_notice_box_ui(self, context)

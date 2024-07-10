@@ -23,6 +23,7 @@ Implements draw calls, popups, and operators that use the addon_updater.
 
 import os
 import traceback
+from .icons import get_icons
 
 import bpy
 from bpy.app.handlers import persistent
@@ -109,8 +110,12 @@ def get_user_preferences(context=None):
         context = bpy.context
     prefs = None
     if hasattr(context, "user_preferences"):
+        if context.user_preferences is None:
+            return None
         prefs = context.user_preferences.addons.get(__package__, None)
     elif hasattr(context, "preferences"):
+        if context.preferences is None:
+            return None
         prefs = context.preferences.addons.get(__package__, None)
     if prefs:
         return prefs.preferences
@@ -863,9 +868,10 @@ def update_notice_box_ui(self, context):
     layout = self.layout
     box = layout.box()
     col = box.column(align=True)
-    col.alert = True
-    col.label(text="Update ready!", icon="ERROR")
-    col.alert = False
+    # col.alert = True
+    icons = get_icons()
+    col.label(text="A new version is available", icon_value=icons["polyhaven"].icon_id)
+    # col.alert = False
     col.separator()
     row = col.row(align=True)
     split = row.split(align=True)
@@ -876,7 +882,7 @@ def update_notice_box_ui(self, context):
     colR.scale_y = 1.5
     if not updater.manual_only:
         colR.operator(AddonUpdaterUpdateNow.bl_idname, text="Update", icon="LOOP_FORWARDS")
-        col.operator("wm.url_open", text="Open website").url = updater.website
+        # col.operator("wm.url_open", text="Open website").url = updater.website
         # ops = col.operator("wm.url_open",text="Direct download")
         # ops.url=updater.update_link
         col.operator(AddonUpdaterInstallManually.bl_idname, text="Install manually")
