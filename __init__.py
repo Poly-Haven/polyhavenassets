@@ -107,7 +107,8 @@ classes = [PHAProperties, PHAPreferences] + ui.classes + operators.classes
 
 @persistent
 def hand_check_new_assets(dummy):
-    threading.Thread(target=check_for_new_assets, args=(bpy.context,)).start()
+    if not bpy.app.background:
+        threading.Thread(target=check_for_new_assets, args=(bpy.context,)).start()
 
 
 def register():
