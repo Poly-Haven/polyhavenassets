@@ -77,7 +77,10 @@ elif asset_type == "1":  # Texture
     if dimensions != "NONE":
         asset["Real Scale (mm)"] = list(float(x) for x in dimensions.split(";"))
 elif asset_type == "2":  # Model
-    asset = bpy.data.collections[slug]
+    if slug + "_LOD0" in bpy.data.collections:
+        asset = bpy.data.collections[slug + "_LOD0"]
+    else:
+        asset = bpy.data.collections[slug]
 else:
     # Unsupported type
     sys.exit()
