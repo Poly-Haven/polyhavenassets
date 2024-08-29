@@ -60,6 +60,7 @@ def update_image(img, asset_id, res, lib_path, info, dry_run=False):
     if dry_run:
         return True
     img.filepath = str(new_path)
+    img.name = new_path.name
     return new_path.name
 
 
