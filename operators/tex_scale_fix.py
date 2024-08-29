@@ -39,6 +39,12 @@ class PHA_OT_tex_scale_fix(bpy.types.Operator):
         surface_areas = []
         uv_areas = []
         for obj in objects:
+            # Check if there are no UV maps
+            if not obj.data.uv_layers:
+                self.report({"ERROR"}, f"{obj.name} has no UV map, please unwrap the object first.")
+                return {"CANCELLED"}
+
+            # Non-uniform scale warning
             if obj.scale != Vector((1, 1, 1)):
                 self.report({"WARNING"}, f"{obj.name} has a non-uniform scale, texture scale will be incorrect.")
 
