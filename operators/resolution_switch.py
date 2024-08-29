@@ -146,9 +146,9 @@ class PHA_OT_resolution_switch(bpy.types.Operator):
             datablock = context.material
             trees.append(datablock.node_tree)
         elif info["type"] == 2:
-            datablock = context.object
-            if datablock.instance_collection:
-                for obj in datablock.instance_collection.all_objects:
+            if context.object and context.object.instance_collection:
+                datablock = context.object.instance_collection
+                for obj in datablock.all_objects:
                     for mat in obj.material_slots:
                         if not hasattr(mat.material, "node_tree"):
                             continue

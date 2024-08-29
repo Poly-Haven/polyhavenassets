@@ -44,14 +44,15 @@ class PHA_PT_asset_model_base:
             statusbar.ui(self, context, statusbar=False)
         else:
             if self.bl_context == "data":
+                ref = context.object.instance_collection
                 if self.has_lods(context):
                     sub.menu(
                         "PHA_MT_lod_switch",
-                        text=context.object.instance_collection.library_weak_reference.id_name[-4:],
+                        text=ref.library_weak_reference.id_name[-4:],
                     )
                 sub.menu(
                     "PHA_MT_resolution_switch_model",
-                    text=(context.object["res"] if "res" in context.object else "1k").upper(),
+                    text=(ref.get("res", context.object.get("res", "1k"))).upper(),
                 )
             else:
                 sub.menu(
