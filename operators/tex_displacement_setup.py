@@ -9,6 +9,8 @@ log = logging.getLogger(__name__)
 # Displacement modes:
 _ADAPTIVE = "Adaptive"
 _STATIC = "Static"
+_MATERIAL = "Material"
+_MODIFIER = "Modifier"
 
 
 class PHA_OT_tex_displacement_setup(bpy.types.Operator):
@@ -27,6 +29,19 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         ],
         name="Displacement Method",
         default=_STATIC,
+        description="",
+    )
+    eevee_displacement_method: bpy.props.EnumProperty(
+        items=[
+            (_MATERIAL, _MATERIAL, "Enable displacement in the material. You will only see it when rendering"),
+            (
+                _MODIFIER,
+                _MODIFIER,
+                "Add a displacement modifier. You'll be able to see the displacement in the viewport without rendering",
+            ),
+        ],
+        name="Displacement Method",
+        default=_MATERIAL,
         description="",
     )
     displacement_subdivisions: bpy.props.IntProperty(
@@ -53,10 +68,13 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
 
     @classmethod
     def setup_render_displacement(self, context):
-        context.scene.cycles.feature_set = "EXPERIMENTAL"
+        using_cycles = context.scene.render.engine == "CYCLES"
+        if using_cycles:
+            context.scene.cycles.feature_set = "EXPERIMENTAL"
         objects = tex_users(context)
         for obj in objects:
-            obj.cycles.use_adaptive_subdivision = True
+            if using_cycles:
+                obj.cycles.use_adaptive_subdivision = True
             needs_subsurf = True
             for mod in obj.modifiers:
                 if mod.type == "SUBSURF":
@@ -133,22 +151,28 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         icons = get_icons()
         layout = self.layout
         col = layout.column(align=True)
+        using_cycles = context.scene.render.engine == "CYCLES"
 
-        if context.scene.render.engine == "CYCLES":
-            row = col.row()
-            row.label(text="Displacement Method:")
-            row.prop(self, "displacement_method", expand=True)
+        row = col.row()
+        row.label(text="Displacement Method:")
+        row.prop(
+            self,
+            "displacement_method" if using_cycles else "eevee_displacement_method",
+            expand=True,
+        )
         col.separator()
 
         col.label(text="Warning:", icon_value=icons["exclamation-triangle"].icon_id)
-        if self.displacement_method == _ADAPTIVE:
-            col.label(text="This will enable the Experimental Feature Set, and add")
-            col.label(text="adaptive Subsurf modifiers to objects using this material.")
-            col.label(text="The displacement will NOT be visible in EEVEE.")
-        elif self.displacement_method == _STATIC:
-            col.label(text="This will add a Subsurf modifier and a Displacement modifier")
-            col.label(text="to objects using this material.")
-            col.label(text="This could freeze your computer for high-poly objects.")
+        if using_cycles:
+            if self.displacement_method == _ADAPTIVE:
+                col.label(text="This will enable the Experimental Feature Set, and add")
+                col.label(text="adaptive Subsurf modifiers to objects using this material.")
+            elif self.displacement_method == _STATIC:
+                col.label(text="This will add a Subsurf modifier and could freeze your")
+                col.label(text="computer for high-poly objects.")
+        else:  # EEVEE
+            col.label(text="This will add a Subsurf modifier and could freeze your")
+            col.label(text="computer for high-poly objects.")
 
         if self.displacement_method == _STATIC:
             col.prop(self, "displacement_subdivisions")
@@ -158,7 +182,14 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         return context.window_manager.invoke_props_dialog(self, width=round(350 * dpi_factor()))
 
     def execute(self, context):
-        if self.displacement_method == _ADAPTIVE:
-            return self.setup_render_displacement(context)
-        elif self.displacement_method == _STATIC:
-            return self.setup_mesh_displacement(context, subdivisions=self.displacement_subdivisions)
+        using_cycles = context.scene.render.engine == "CYCLES"
+        if using_cycles:
+            if self.displacement_method == _ADAPTIVE:
+                return self.setup_render_displacement(context)
+            elif self.displacement_method == _STATIC:
+                return self.setup_mesh_displacement(context, subdivisions=self.displacement_subdivisions)
+        else:  # EEVEE
+            if self.eevee_displacement_method == _MATERIAL:
+                return self.setup_render_displacement(context)
+            elif self.eevee_displacement_method == _MODIFIER:
+                return self.setup_mesh_displacement(context, subdivisions=self.displacement_subdivisions)
