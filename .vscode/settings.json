@@ -8,4 +8,8 @@
         ".idea": true
     },
     "editor.tabSize": 4,
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportMissingImports": "none",
+        "reportInvalidTypeForm": "none",
+    }
 }
