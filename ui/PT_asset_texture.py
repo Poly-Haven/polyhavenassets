@@ -54,7 +54,7 @@ class PHA_PT_asset_texture:
         col = layout.column()
         row = col.row()
         row.operator("pha.tex_scale_fix", icon="CON_SIZELIMIT")
-        row.operator("pha.tex_displacement_setup", icon="BRUSH_FILL")
+        row.operator("pha.tex_displacement_setup", icon="MOD_DISPLACE")
         asset_info_box.draw(self, context, col, self.asset_id)
 
 
