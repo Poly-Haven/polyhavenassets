@@ -2,7 +2,7 @@ bl_info = {
     "name": "Poly Haven Assets",
     "description": "Dynamically adds all HDRIs, materials and 3D models from polyhaven.com into the Asset Browser",
     "author": "Poly Haven",
-    "version": (1, 1, 10),
+    "version": (1, 1, 11),
     "blender": (3, 2, 0),
     "location": "Asset Browser",
     "warning": "",
@@ -160,7 +160,6 @@ def register():
     bpy.types.WindowManager.pha_props = bpy.props.PointerProperty(type=PHAProperties)
     bpy.app.handlers.load_post.append(hand_check_new_assets)
     bpy.app.handlers.save_post.append(hand_check_new_assets)
-    hand_check_new_assets(None)
 
 
 def unregister():
