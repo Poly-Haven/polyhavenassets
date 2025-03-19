@@ -297,7 +297,7 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
             )
             return {"CANCELLED"}
 
-        error, assets = get_asset_list(self.asset_type)
+        error, assets = get_asset_list(self.asset_type, True)
         if error:
             self.report({"ERROR"}, error)
             return {"CANCELLED"}

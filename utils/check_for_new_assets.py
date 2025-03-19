@@ -3,14 +3,14 @@ from .get_asset_list import get_asset_list
 from ..utils.abspath import abspath
 
 
-def check_for_new_assets(context):
+def check_for_new_assets(context, force=False):
     asset_lib = get_asset_lib(context)
     if asset_lib is None:
         return
     if not abspath(asset_lib.path).exists():
         return
 
-    error, assets = get_asset_list()
+    error, assets = get_asset_list("all", force)
     if error:
         return
 
