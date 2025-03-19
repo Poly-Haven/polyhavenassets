@@ -75,7 +75,7 @@ def draw(self, context, layout, asset_id):
         for uid in info["sponsors"]:
             row = col.row(align=True)
             row.alignment = "CENTER"
-            if type(uid) != str:
+            if not isinstance(uid, str):
                 sponsor_data = uid
             else:
                 if uid in SPONSOR_INFO:

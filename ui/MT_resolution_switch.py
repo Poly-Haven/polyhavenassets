@@ -14,7 +14,7 @@ _bl_description = "Choose between the available texture resolutions for this ass
 
 def _draw(self, context, asset):
     asset_id = is_ph_asset(context, asset)
-    if type(asset) == bpy.types.World:
+    if isinstance(asset, bpy.types.World):
         files = get_asset_info(context, asset_id)["files"]["hdri"]
     else:
         files = get_asset_info(context, asset_id)["files"]["blend"]
@@ -24,7 +24,7 @@ def _draw(self, context, asset):
 
     for res in sorted_resolutions:
         local = True
-        if type(asset) == bpy.types.World:
+        if isinstance(asset, bpy.types.World):
             size = files[res]["hdr"]["size"]
             if not (asset_lib_path / asset_id / f"{asset_id}_{res}.hdr").exists():
                 local = False
