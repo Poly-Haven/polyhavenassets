@@ -23,7 +23,7 @@ class PHA_PT_asset_texture:
 
     @classmethod
     def poll(self, context):
-        self.asset_id = is_ph_asset(context, context.material)
+        self.asset_id = is_ph_asset(context.material)
         if not self.asset_id:
             return False
 

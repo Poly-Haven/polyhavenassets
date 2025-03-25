@@ -17,7 +17,7 @@ class PHA_PT_asset_hdri(bpy.types.Panel):
 
     @classmethod
     def poll(self, context):
-        self.asset_id = is_ph_asset(context, context.world)
+        self.asset_id = is_ph_asset(context.world)
         return bool(self.asset_id)
 
     def draw_header(self, context):

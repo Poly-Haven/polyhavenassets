@@ -25,7 +25,7 @@ class PHA_OT_tex_scale_fix(bpy.types.Operator):
         if not hasattr(context, "material"):
             return False
 
-        self.asset_id = is_ph_asset(context, context.material)
+        self.asset_id = is_ph_asset(context.material)
         return bool(self.asset_id)
 
     def execute(self, context):
@@ -91,7 +91,7 @@ class PHA_OT_tex_scale_fix(bpy.types.Operator):
                 if mod.type == "DISPLACE":
                     try:
                         img = mod.texture.image
-                        if is_ph_asset(context, img):
+                        if is_ph_asset(img):
                             mod.texture.crop_max_x = multiplier * sqrt_aspect_ratio
                             mod.texture.crop_max_y = multiplier / sqrt_aspect_ratio
                     except AttributeError:

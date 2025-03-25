@@ -24,7 +24,7 @@ class PHA_PT_asset_model_base:
 
     @classmethod
     def poll(self, context):
-        self.asset_id = is_ph_asset(context, context.object.instance_collection)
+        self.asset_id = is_ph_asset(context.object.instance_collection)
         return bool(self.asset_id)
 
     def has_lods(self, context):
@@ -74,7 +74,7 @@ class PHA_PT_asset_model(bpy.types.Panel, PHA_PT_asset_model_base):
 
 
 def is_model_material(context, asset_id):
-    asset_id = is_ph_asset(context, context.material)
+    asset_id = is_ph_asset(context.material)
     if not asset_id:
         return False
 
@@ -91,7 +91,7 @@ class PHA_PT_asset_model_eevee(bpy.types.Panel, PHA_PT_asset_model_base):
 
     @classmethod
     def poll(self, context):
-        self.asset_id = is_ph_asset(context, context.material)
+        self.asset_id = is_ph_asset(context.material)
         return is_model_material(context, self.asset_id)
 
 
@@ -101,5 +101,5 @@ class PHA_PT_asset_model_cycles(bpy.types.Panel, PHA_PT_asset_model_base):
 
     @classmethod
     def poll(self, context):
-        self.asset_id = is_ph_asset(context, context.material)
+        self.asset_id = is_ph_asset(context.material)
         return is_model_material(context, self.asset_id)

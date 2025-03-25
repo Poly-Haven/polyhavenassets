@@ -13,7 +13,7 @@ _bl_description = "Choose between the available texture resolutions for this ass
 
 
 def _draw(self, context, asset):
-    asset_id = is_ph_asset(context, asset)
+    asset_id = is_ph_asset(asset)
     if isinstance(asset, bpy.types.World):
         files = get_asset_info(context, asset_id)["files"]["hdri"]
     else:

@@ -2,8 +2,8 @@ bl_info = {
     "name": "Poly Haven Assets",
     "description": "Dynamically adds all HDRIs, materials and 3D models from polyhaven.com into the Asset Browser",
     "author": "Poly Haven",
-    "version": (1, 1, 12),
-    "blender": (3, 2, 0),
+    "version": (2, 0, 0),
+    "blender": (4, 3, 0),
     "location": "Asset Browser",
     "warning": "",
     "doc_url": "https://docs.polyhaven.com/en/guides/blender-addon",
@@ -40,6 +40,7 @@ import threading
 import logging
 from bpy.app.handlers import persistent
 from .utils.check_for_new_assets import check_for_new_assets
+from .utils.post_import import post_import
 
 log = logging.getLogger(__name__)
 
@@ -111,6 +112,11 @@ def hand_check_new_assets(dummy):
         threading.Thread(target=check_for_new_assets, args=(bpy.context,)).start()
 
 
+@persistent
+def hand_post_import(lapp_context):
+    post_import(lapp_context)
+
+
 def register():
 
     try:
@@ -158,8 +164,10 @@ def register():
     bpy.types.STATUSBAR_HT_header.prepend(ui.statusbar.ui)
 
     bpy.types.WindowManager.pha_props = bpy.props.PointerProperty(type=PHAProperties)
+
     bpy.app.handlers.load_post.append(hand_check_new_assets)
     bpy.app.handlers.save_post.append(hand_check_new_assets)
+    bpy.app.handlers.blend_import_post.append(hand_post_import)
 
 
 def unregister():
@@ -168,6 +176,8 @@ def unregister():
 
     bpy.app.handlers.load_post.remove(hand_check_new_assets)
     bpy.app.handlers.save_post.remove(hand_check_new_assets)
+    bpy.app.handlers.blend_import_post.remove(hand_post_import)
+
     del bpy.types.WindowManager.pha_props
 
     bpy.types.USERPREF_PT_file_paths_asset_libraries.remove(ui.prefs_lib_reminder.prefs_lib_reminder)
