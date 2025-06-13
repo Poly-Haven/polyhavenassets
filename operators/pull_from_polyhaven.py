@@ -209,6 +209,8 @@ class PHA_OT_pull_from_polyhaven(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
+        if bpy.app.version_string < "3.2.0":
+            return False
         return context.window_manager.pha_props.progress_total == 0
 
     def invoke(self, context, event):
