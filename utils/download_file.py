@@ -48,7 +48,7 @@ def download_file(url, dest, hash=None, retries=3):
 
     th.join()
 
-    res = RES[key]
+    res = RES.pop(key)
     if isinstance(res, Exception):
         msg = f"[{type(res).__name__}] Error retrieving {url}"
         log.error(msg)
