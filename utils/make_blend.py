@@ -1,5 +1,6 @@
 import bpy
 import sys
+import time
 from pathlib import Path
 
 TYPES = {
@@ -56,6 +57,7 @@ slug, asset_type, thumbnail_file, authors, categories, tags, dimensions, hdr_fil
 
 # Mark asset
 asset = None
+geo_nodes = None
 if asset_type == "0":  # HDRI
     asset = bpy.context.scene.world
     asset.name = slug
@@ -83,35 +85,52 @@ elif asset_type == "2":  # Model
         asset = bpy.data.collections[f"{slug}_static"]
     else:
         asset = bpy.data.collections[slug]
+
+    geo_nodes = bpy.data.node_groups.get(f"{slug}_scatter") or bpy.data.objects.get(f"{slug}_geometry_nodes")
 else:
     # Unsupported type
     sys.exit()
 
 if asset:
     asset.asset_mark()
+if geo_nodes:
+    geo_nodes.asset_mark()
 
 # Set thumbnail
 override = bpy.context.copy()
 override["id"] = asset
 with bpy.context.temp_override(**override):
     bpy.ops.ed.lib_id_load_custom_preview(filepath=thumbnail_file)
+if geo_nodes:
+    override["id"] = geo_nodes
+    with bpy.context.temp_override(**override):
+        bpy.ops.ed.lib_id_load_custom_preview(filepath=thumbnail_file)
 
 
 # Set catalogs
 cat_id = get_catalog_id(asset_type, categories.split(";"))
 if cat_id:
     asset.asset_data.catalog_id = cat_id
+    if geo_nodes:
+        geo_nodes.asset_data.catalog_id = cat_id
 # Since an asset can only be in a single catalog, set each category as a tag too.
 for c in categories.split(";"):
     asset.asset_data.tags.new(c, skip_if_exists=True)
+    if geo_nodes:
+        geo_nodes.asset_data.tags.new(c, skip_if_exists=True)
 
 # Set tags
 for t in tags.split(";"):
     asset.asset_data.tags.new(t, skip_if_exists=True)
+    if geo_nodes:
+        geo_nodes.asset_data.tags.new(t, skip_if_exists=True)
 
 # Set author, description
 asset.asset_data.author = authors
 asset.asset_data.description = f"A CC0 {TYPES[asset_type][:-1]} by polyhaven.com"
+if geo_nodes:
+    geo_nodes.asset_data.author = authors
+    geo_nodes.asset_data.description = f"A CC0 {TYPES[asset_type][:-1]} by polyhaven.com"
 
 # Make all images relative
 if asset_type == "0":
