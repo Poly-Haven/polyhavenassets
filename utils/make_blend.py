@@ -79,6 +79,8 @@ elif asset_type == "1":  # Texture
 elif asset_type == "2":  # Model
     if slug + "_LOD0" in bpy.data.collections:
         asset = bpy.data.collections[slug + "_LOD0"]
+    elif f"{slug}_static" in bpy.data.collections:
+        asset = bpy.data.collections[f"{slug}_static"]
     else:
         asset = bpy.data.collections[slug]
 else:
