@@ -14,22 +14,21 @@ A Blender add-on to integrate our assets natively in the asset browser.
 
 ## Installation
 
-This add-on is meant to be purchased on the [Blender Market](https://blendermarket.com/products/poly-haven-asset-browser) or through [Patreon](https://www.patreon.com/posts/70974704) to support our work making new assets. However if you would like to try-before-you-buy, you can also [download it here for free](https://github.com/Poly-Haven/polyhavenassets/releases/latest/download/polyhavenassets_github.zip).
+This add-on is meant to be purchased on [Superhive](https://superhivemarket.com/products/poly-haven-asset-browser) or through [Patreon](https://www.patreon.com/posts/70974704) to support our work making new assets.
 
-If you like it, please consider [purchasing it](https://blendermarket.com/products/poly-haven-asset-browser) to support our work on future assets :) Everyone tells me $30 is a steal for over 1500 high quality assets. By purchasing it, you'll also get **early access to upcoming content** months before everyone else.
+**We are currently running a funding campaign to release the add-on for free for everyone - read more about it here: https://blog.polyhaven.com/liberating-our-blender-add-on/**
 
 1. Download the ZIP file...
-    * From your [Blender Market account page](https://blendermarket.com/account/orders) if you purchased it there ($30).
+    * From your [Superhive account page](https://superhivemarket.com/account/orders) if you purchased it there ($30).
     * From [this post on Patreon](https://www.patreon.com/posts/blender-asset-70974704) if you support us there ($5/m).
-    * From [the latest release](https://github.com/Poly-Haven/polyhavenassets/releases/latest/download/polyhavenassets_github.zip) on GitHub (free).
-2. Install the zip file from Blender's User Preferences.
+2. Install the zip file from Blender's User Preferences (do not unzip it first).
 3. Enable the add-on.
 
 For more detailed instructions, please check our [video guide and documentation](https://docs.polyhaven.com/en/guides/blender-addon).
 
-### Updating:
+## Support
 
-To check for a new version of the add-on, simply visit the Preferences and click the *Check now for update* button.
+If you need help, please check out the [user guide and documentation](https://docs.polyhaven.com/en/guides/blender-addon) first, then contact us using the link at the bottom of that page.
 
 ## Usage
 
@@ -41,7 +40,8 @@ To check for a new version of the add-on, simply visit the Preferences and click
 4. After the initial download (which currently is around 3.3GB), simply drag and drop the assets into your scene.
 5. We release new assets almost daily, so you can click that *Fetch Assets* button any time to download new assets.
 
-## Known Issues
+### Updating:
 
-1. After installing and downloading assets for the first time, the list of catalogs may not be updated automatically. Simply restart Blender and you should see them.
-2. It would be nice if users didn't have to download all ~1500 of our assets beforehand, but rather have them download dynamically when they're dragged into the scene. Right now it doesn't seem like this is possible in the Blender API, but it should be possible sometime in the future.
+To check for a new version of the add-on, simply visit the add-on's Preferences in Blender and click the *Check now for update* button.
+
+Alternatively, you can download the latest version and install it again from your [Superhive account page](https://superhivemarket.com/account/orders) or [this post on Patreon](https://www.patreon.com/posts/blender-asset-70974704).
