@@ -26,7 +26,7 @@ This add-on is meant to be purchased on [Superhive](https://superhivemarket.com/
 >
 > [Read more about liberating this add-on](https://blog.polyhaven.com/liberating-our-blender-add-on/).
 >
-> ![roadmapImg](https://polyhaven.com/api/roadmapImg?m=light)
+> [![roadmapImg](https://polyhaven.com/api/roadmapImg?m=light)](https://polyhaven.com/vaults)
 
 1. Download the ZIP file...
     * From your [Superhive account page](https://superhivemarket.com/account/orders) if you purchased it there ($30).
