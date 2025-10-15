@@ -16,7 +16,11 @@ A Blender add-on to integrate our assets natively in the asset browser.
 
 This add-on is meant to be purchased on [Superhive](https://superhivemarket.com/products/poly-haven-asset-browser) or through [Patreon](https://www.patreon.com/posts/70974704) to support our work making new assets.
 
-**We are currently running a funding campaign to release the add-on for free for everyone - read more about it here: https://blog.polyhaven.com/liberating-our-blender-add-on/**
+> ## **We are currently running a funding campaign to release the add-on for free for everyone**
+> 
+> **Read more about it here: https://blog.polyhaven.com/liberating-our-blender-add-on/**
+>
+> **By purchasing the add-on through [Patreon](https://www.patreon.com/posts/blender-asset-70974704), you help bring it closer to being released for free.**
 
 1. Download the ZIP file...
     * From your [Superhive account page](https://superhivemarket.com/account/orders) if you purchased it there ($30).
