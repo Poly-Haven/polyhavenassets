@@ -17,7 +17,7 @@ A Blender add-on to integrate our assets natively in the asset browser.
 This add-on is meant to be purchased on [Superhive](https://superhivemarket.com/products/poly-haven-asset-browser) or through [Patreon](https://www.patreon.com/posts/70974704) to support our work making new assets.
 
 > ## **Help make this add-on free for everyone!**
-> 
+>
 >  While all [our assets](https://polyhaven.com/all) are 100% free to download, it costs us a lot to create them. By selling this add-on, we've been able to grow Poly Haven, creating over 1000 new assets and improving the quality of our work.
 >
 > **However, we don't want to sell this add-on forever, we want to focus on free content and open access.**
@@ -29,7 +29,7 @@ This add-on is meant to be purchased on [Superhive](https://superhivemarket.com/
 > [![roadmapImg](https://polyhaven.com/api/roadmapImg?m=light)](https://polyhaven.com/vaults)
 
 1. Download the ZIP file...
-    * From your [Superhive account page](https://superhivemarket.com/account/orders) if you purchased it there ($30).
+    * From your [Superhive account page](https://superhivemarket.com/account/orders) if you purchased it there ($69).
     * From [this post on Patreon](https://www.patreon.com/posts/blender-asset-70974704) if you support us there ($5/m).
 2. Install the zip file from Blender's User Preferences (do not unzip it first).
 3. Enable the add-on.
