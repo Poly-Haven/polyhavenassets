@@ -36,3 +36,20 @@ def ui(self, context):
     op.revalidate = False
     b = row.box()  # Force some kind of emboss effect
     b.menu("PHA_MT_pull_by_type", text="", icon="DOWNARROW_HLT")
+
+    import_method = context.space_data.params.import_method
+    if import_method == "FOLLOW_PREFS":
+        try:
+            import_method = context.preferences.filepaths.asset_libraries[lib_ref].import_method
+        except KeyError:
+            # Library not found, shit's gonna break some other way!
+            import_method = "APPEND"
+    if "APPEND" not in import_method:
+        row.separator_spacer()
+        row.label(
+            text="Import method is not 'Append', assets will not be editable.",
+            icon_value=i["exclamation-triangle"].icon_id,
+        )
+        row.operator("wm.url_open", text="More info", icon="HELP").url = (
+            "https://docs.polyhaven.com/en/guides/blender-addon#i-imported-an-asset-but-there-is-no-panel-to-change-resolutions-or-set-up-displacementscale"
+        )
