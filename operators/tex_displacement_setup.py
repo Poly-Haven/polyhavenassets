@@ -70,11 +70,13 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
     def setup_render_displacement(self, context):
         using_cycles = context.scene.render.engine == "CYCLES"
         if using_cycles:
-            context.scene.cycles.feature_set = "EXPERIMENTAL"
+            if bpy.app.version < (5, 0, 0):  # Displacement no longer experimental in 5.0
+                context.scene.cycles.feature_set = "EXPERIMENTAL"
         objects = tex_users(context)
         for obj in objects:
             if using_cycles:
-                obj.cycles.use_adaptive_subdivision = True
+                if hasattr(obj.cycles, "use_adaptive_subdivision"):  # Moved from obj to modifier props in 5.0
+                    obj.cycles.use_adaptive_subdivision = True
             needs_subsurf = True
             for mod in obj.modifiers:
                 if mod.type == "SUBSURF":
@@ -83,6 +85,9 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
             if needs_subsurf:
                 mod = obj.modifiers.new("Tessellation", "SUBSURF")
                 mod.subdivision_type = "SIMPLE"
+            if mod:
+                if hasattr(mod, "use_adaptive_subdivision"):  # Moved from obj to modifier props in 5.0
+                    mod.use_adaptive_subdivision = True
 
         return {"FINISHED"}
 
@@ -165,8 +170,12 @@ class PHA_OT_tex_displacement_setup(bpy.types.Operator):
         col.label(text="Warning:", icon_value=icons["exclamation-triangle"].icon_id)
         if using_cycles:
             if self.displacement_method == _ADAPTIVE:
-                col.label(text="This will enable the Experimental Feature Set, and add")
-                col.label(text="adaptive Subsurf modifiers to objects using this material.")
+                if bpy.app.version < (5, 0, 0):  # Displacement no longer experimental in 5.0
+                    col.label(text="This will enable the Experimental Feature Set, and add")
+                    col.label(text="adaptive Subsurf modifiers to objects using this material.")
+                else:
+                    col.label(text="This will add adaptive Subsurf modifiers to objects using")
+                    col.label(text="this material.")
             elif self.displacement_method == _STATIC:
                 col.label(text="This will add a Subsurf modifier and could freeze your")
                 col.label(text="computer for high-poly objects.")
