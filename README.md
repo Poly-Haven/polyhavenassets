@@ -31,8 +31,20 @@ This add-on is meant to be purchased on [Superhive](https://superhivemarket.com/
 1. Download the ZIP file...
     * From your [Superhive account page](https://superhivemarket.com/account/orders) if you purchased it there ($69).
     * From [this post on Patreon](https://www.patreon.com/posts/blender-asset-70974704) if you support us there ($5/m).
-2. Install the zip file from Blender's User Preferences (do not unzip it first).
-3. Enable the add-on.
+2. In Blender 4.2 and newer, open `Edit > Preferences > Extensions`, click `Install from Disk...`, and select the ZIP file (do not unzip it first).
+3. Enable the extension.
+
+> Blender 4.2+ installs this package as an extension. Using the legacy add-on installer with a versioned ZIP can cause import errors such as `No module named 'polyhavenassets-1'`.
+
+### Building from source
+
+If you are packaging this repository yourself, build the distributable ZIP from the repository root with Blender's extension CLI:
+
+```powershell
+"C:\Program Files\Blender Foundation\Blender 5.1\blender.exe" --command extension build
+```
+
+This generates a Blender extension package using `blender_manifest.toml`, which is the expected format for Blender 4.2 and newer.
 
 For more detailed instructions, please check our [video guide and documentation](https://docs.polyhaven.com/en/guides/blender-addon).
 

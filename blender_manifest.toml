@@ -1,0 +1,33 @@
+schema_version = "1.0.0"
+
+id = "polyhavenassets"
+version = "1.2.1"
+name = "Poly Haven Assets"
+tagline = "Browse and download Poly Haven assets in the Asset Browser"
+maintainer = "Poly Haven"
+type = "add-on"
+
+website = "https://docs.polyhaven.com/en/guides/blender-addon"
+
+blender_version_min = "4.5.0"
+
+license = [
+  "SPDX:GPL-3.0-or-later",
+]
+
+[permissions]
+network = "Download assets and check for updates"
+files = "Store the asset library on disk"
+
+[build]
+paths_exclude_pattern = [
+  ".git/",
+  ".github/",
+  ".idea/",
+  ".vscode/",
+  "__pycache__/",
+  "*.zip",
+  "*.pyc",
+  ".gitignore",
+  "screenshot.jpg",
+]

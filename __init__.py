@@ -1,9 +1,14 @@
+ADDON_VERSION = (1, 2, 1)
+BLENDER_VERSION_MIN = (4, 5, 0)
+UPDATER_METADATA = {"version": ADDON_VERSION}
+
+
 bl_info = {
     "name": "Poly Haven Assets",
     "description": "Dynamically adds all HDRIs, materials and 3D models from polyhaven.com into the Asset Browser",
     "author": "Poly Haven",
-    "version": (1, 2, 1),
-    "blender": (4, 5, 0),
+    "version": ADDON_VERSION,
+    "blender": BLENDER_VERSION_MIN,
     "location": "Asset Browser",
     "warning": "",
     "doc_url": "https://docs.polyhaven.com/en/guides/blender-addon",
@@ -114,13 +119,13 @@ def hand_check_new_assets(dummy):
 def register():
 
     try:
-        addon_updater_ops.register(bl_info)
+        addon_updater_ops.register(UPDATER_METADATA)
     except ValueError as e:
         if "register_class(...): already registered as a subclass" in str(e):
             # Try to unregister it first, and then register it again
             try:
                 addon_updater_ops.unregister()
-                addon_updater_ops.register(bl_info)
+                addon_updater_ops.register(UPDATER_METADATA)
             except ValueError:
                 raise RuntimeError(
                     "\nFailed to enable add-on because some identical classes are already registered."
