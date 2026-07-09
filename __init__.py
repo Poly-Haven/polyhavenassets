@@ -105,6 +105,18 @@ class PHAPreferences(bpy.types.AddonPreferences):
 classes = [PHAProperties, PHAPreferences] + ui.classes + operators.classes
 
 
+def asset_libraries_prefs_panel():
+    """Return the Preferences panel that lists asset libraries, or None.
+
+    Blender 5.2 moved asset libraries out of the "File Paths" section into a
+    dedicated "Assets" section, replacing the USERPREF_PT_file_paths_asset_libraries
+    panel with USERPREF_PT_assets. Fall back gracefully if neither exists.
+    """
+    return getattr(bpy.types, "USERPREF_PT_file_paths_asset_libraries", None) or getattr(
+        bpy.types, "USERPREF_PT_assets", None
+    )
+
+
 @persistent
 def hand_check_new_assets(dummy):
     if not bpy.app.background:
@@ -152,7 +164,9 @@ def register():
                         "\nPlease try restart Blender, or report this issue to us"
                     ) from None
 
-    bpy.types.USERPREF_PT_file_paths_asset_libraries.append(ui.prefs_lib_reminder.prefs_lib_reminder)
+    prefs_panel = asset_libraries_prefs_panel()
+    if prefs_panel is not None:
+        prefs_panel.append(ui.prefs_lib_reminder.prefs_lib_reminder)
     bpy.types.ASSETBROWSER_PT_metadata.append(ui.asset_lib_support.ui)
     bpy.types.ASSETBROWSER_MT_editor_menus.append(ui.asset_lib_titlebar.ui)
     bpy.types.STATUSBAR_HT_header.prepend(ui.statusbar.ui)
@@ -170,7 +184,9 @@ def unregister():
     bpy.app.handlers.save_post.remove(hand_check_new_assets)
     del bpy.types.WindowManager.pha_props
 
-    bpy.types.USERPREF_PT_file_paths_asset_libraries.remove(ui.prefs_lib_reminder.prefs_lib_reminder)
+    prefs_panel = asset_libraries_prefs_panel()
+    if prefs_panel is not None:
+        prefs_panel.remove(ui.prefs_lib_reminder.prefs_lib_reminder)
     bpy.types.ASSETBROWSER_PT_metadata.remove(ui.asset_lib_support.ui)
     bpy.types.ASSETBROWSER_MT_editor_menus.remove(ui.asset_lib_titlebar.ui)
     bpy.types.STATUSBAR_HT_header.remove(ui.statusbar.ui)
