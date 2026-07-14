@@ -1,22 +1,86 @@
 import bpy
 import textwrap
+import logging
 from .. import ephemeral
 from .. import icons
 from ..utils.dpi_factor import dpi_factor
 from ..utils.early_access import early_access
 from .. import addon_updater_ops
 
+log = logging.getLogger(__name__)
 
-def paragraph(paragraph, width, layout):
+
+def paragraph(text, width, layout, align="CENTER"):
     wrapp = textwrap.TextWrapper(width=round(width / 6.5))
-    wList = wrapp.wrap(text=paragraph)
     layout.separator()
     textcol = layout.column(align=True)
     textcol.scale_y = 0.7
-    for text in wList:
-        row = textcol.row(align=True)
-        row.alignment = "CENTER"
-        row.label(text=text)
+    for line in text.split("\n"):
+        if not line:
+            textcol.separator()
+            continue
+        for wrapped in wrapp.wrap(text=line):
+            row = textcol.row(align=True)
+            row.alignment = align
+            row.label(text=wrapped)
+
+
+def _is_valid_builtin_icon(name):
+    try:
+        enum_items = bpy.types.UILayout.bl_rna.functions["operator"].parameters["icon"].enum_items
+        return name in enum_items
+    except (KeyError, AttributeError):
+        return False
+
+
+def _operator_exists(idname):
+    try:
+        category, name = idname.split(".", 1)
+        return hasattr(getattr(bpy.ops, category), name)
+    except (ValueError, AttributeError):
+        return False
+
+
+def _news_button_icon_kwargs(icon, icons_coll):
+    """Resolve a news button icon: bundled icon file first, then a built-in icon
+    name, else nothing (failing silently with a warning)."""
+    if not icon:
+        return {}
+    if icon in icons_coll:
+        return {"icon_value": icons_coll[icon].icon_id}
+    if _is_valid_builtin_icon(icon):
+        return {"icon": icon}
+    log.warning(f"News button icon '{icon}' is neither a bundled icon nor a built-in Blender icon")
+    return {}
+
+
+def draw_news(layout, context, news_item):
+    i = icons.get_icons()
+    box = layout.box()
+    col = box.column(align=True)
+
+    header = col.row(align=True)
+    header.label(text=news_item.get("title", ""), icon_value=i["polyhaven"].icon_id)
+    header.operator("pha.dismiss_news", text="", icon="PANEL_CLOSE", emboss=False).key = news_item.get("key", "")
+
+    content = news_item.get("content", "")
+    if content:
+        width = context.region.width / dpi_factor()
+        align = "LEFT" if news_item.get("align") == "left" else "CENTER"
+        paragraph(content, width, col, align=align)
+
+    button = news_item.get("button")
+    if button and button.get("text") and button.get("target"):
+        col.separator()
+        text = button["text"]
+        target = button["target"]
+        kwargs = _news_button_icon_kwargs(button.get("icon"), i)
+        if target.startswith("http"):
+            col.operator("wm.url_open", text=text, **kwargs).url = target
+        elif _operator_exists(target):
+            col.operator(target, text=text, **kwargs)
+        else:
+            log.warning(f"News button target '{target}' is not a URL or a known operator; skipping button")
 
 
 class PHA_PT_sidebar(bpy.types.Panel):
@@ -94,3 +158,6 @@ class PHA_PT_sidebar(bpy.types.Panel):
             col.separator()
 
         addon_updater_ops.update_notice_box_ui(self, context)
+
+        if ephemeral.news_item:
+            draw_news(layout, context, ephemeral.news_item)

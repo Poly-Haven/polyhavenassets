@@ -7,6 +7,7 @@ if "bpy" not in locals():
     from . import go_to_asset
     from . import allyourbase
     from . import lod_switch
+    from . import dismiss_news
 else:
     import importlib
 
@@ -18,6 +19,7 @@ else:
     importlib.reload(go_to_asset)
     importlib.reload(allyourbase)
     importlib.reload(lod_switch)
+    importlib.reload(dismiss_news)
 
 import bpy  # noqa: F401
 
@@ -30,4 +32,5 @@ classes = [
     go_to_asset.PHA_OT_go_to_asset,
     allyourbase.PHA_OT_allyourbase,
     lod_switch.PHA_OT_lod_switch,
+    dismiss_news.PHA_OT_dismiss_news,
 ]

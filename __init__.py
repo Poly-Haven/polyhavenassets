@@ -40,6 +40,8 @@ import threading
 import logging
 from bpy.app.handlers import persistent
 from .utils.check_for_new_assets import check_for_new_assets
+from .utils.news import check_news
+from . import ephemeral
 
 log = logging.getLogger(__name__)
 
@@ -123,6 +125,15 @@ def hand_check_new_assets(dummy):
         threading.Thread(target=check_for_new_assets, args=(bpy.context,)).start()
 
 
+@persistent
+def hand_check_news(dummy):
+    # Only pick one news item per session; guard is set on the main thread to avoid
+    # a race if load_post/save_post fire in quick succession.
+    if not bpy.app.background and not ephemeral.news_checked:
+        ephemeral.news_checked = True
+        threading.Thread(target=check_news).start()
+
+
 def register():
 
     try:
@@ -174,6 +185,8 @@ def register():
     bpy.types.WindowManager.pha_props = bpy.props.PointerProperty(type=PHAProperties)
     bpy.app.handlers.load_post.append(hand_check_new_assets)
     bpy.app.handlers.save_post.append(hand_check_new_assets)
+    bpy.app.handlers.load_post.append(hand_check_news)
+    bpy.app.handlers.save_post.append(hand_check_news)
 
 
 def unregister():
@@ -182,6 +195,8 @@ def unregister():
 
     bpy.app.handlers.load_post.remove(hand_check_new_assets)
     bpy.app.handlers.save_post.remove(hand_check_new_assets)
+    bpy.app.handlers.load_post.remove(hand_check_news)
+    bpy.app.handlers.save_post.remove(hand_check_news)
     del bpy.types.WindowManager.pha_props
 
     prefs_panel = asset_libraries_prefs_panel()
