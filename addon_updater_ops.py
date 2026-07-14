@@ -83,7 +83,7 @@ def make_annotations(cls):
     """Add annotation attribute to fields to avoid Blender 2.8+ warnings"""
     if not hasattr(bpy.app, "version") or bpy.app.version < (2, 80):
         return cls
-    if bpy.app.version >= (3, 0, 0):
+    if bpy.app.version >= (5, 0, 0):
         return cls
     if bpy.app.version < (2, 93, 0):
         bl_props = {k: v for k, v in cls.__dict__.items() if isinstance(v, tuple)}
