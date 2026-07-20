@@ -12,28 +12,20 @@ bl_info = {
 }
 
 
-if "bpy" not in locals():
-    from . import ui
-    from . import operators
-    from . import icons
-    from . import addon_updater_ops
-else:
-    try:
-        import importlib
+import sys
 
-        importer = importlib
-    except ImportError:
-        try:
-            import imp
+# When the add-on is updated in-place, Blender reloads only this top-level package and leaves the
+# previous version's submodules in sys.modules. New code then gets imported against old submodules -
+# e.g. utils/news.py importing API_URL from a constants module that was cached before that constant
+# existed, which raises ImportError until Blender is restarted. Dropping the stale entries first
+# means every import below re-reads from disk, so no restart is needed.
+for _stale in [m for m in list(sys.modules) if m.startswith(f"{__package__}.")]:
+    del sys.modules[_stale]
 
-            importer = imp
-        except ImportError:
-            raise ModuleNotFoundError("Cannot find the imp/importlib module")
-
-    importer.reload(ui)
-    importer.reload(operators)
-    importer.reload(icons)
-    importer.reload(addon_updater_ops)
+from . import ui  # noqa: E402
+from . import operators  # noqa: E402
+from . import icons  # noqa: E402
+from . import addon_updater_ops  # noqa: E402
 
 import bpy
 import threading
