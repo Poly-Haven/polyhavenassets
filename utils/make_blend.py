@@ -132,6 +132,16 @@ if geo_nodes:
     geo_nodes.asset_data.author = authors
     geo_nodes.asset_data.description = f"A CC0 {TYPES[asset_type][:-1]} by polyhaven.com"
 
+# Set preferred import method
+if hasattr(asset.asset_data, "preferred_import_method"):  # Only exists in Blender 5.2+
+    asset.asset_data.preferred_import_method = "APPEND"
+    asset.asset_data.use_preferred_import_method = True
+    if geo_nodes:
+        geo_nodes.asset_data.preferred_import_method = "APPEND"
+        geo_nodes.asset_data.use_preferred_import_method = True
+else:
+    print(f"WARN: No asset_data.preferred_import_method in Blender {bpy.app.version_string}, not set")
+
 # Make all images relative
 if asset_type == "0":
     out_file = Path(hdr_file).parent / f"{slug}.blend"
