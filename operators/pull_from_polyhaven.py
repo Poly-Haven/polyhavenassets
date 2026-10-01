@@ -90,16 +90,25 @@ def download_asset(slug, info, lib_dir, info_fp):
         return f"Cancelled {slug}"
 
     thumbnail_file = lib_dir / slug / "thumbnail.webp"
-    url_path = f"/asset_img/thumbs/{slug}.png?width=256&height=256"
-    error = download_file("https://cdn.polyhaven.com" + url_path, thumbnail_file)
+    # The API's own URL rather than one built here. It carries the asset's img_version, so whenever
+    # this runs it gets the current render rather than a year-stale cached one, and an explicit
+    # format=webp, so the bytes always match the .webp filename above. A URL without it got
+    # whatever format the first client through the CDN happened to accept - in practice usually a
+    # PNG four times the size, since requests sends Accept: */*.
+    # Built by hand only as a fallback, for an asset dict that somehow lacks the field.
+    thumbnail_url = info.get("thumbnail_url") or (
+        f"https://cdn.polyhaven.com/asset_img/thumbs/{slug}.png?width=256&height=256&format=webp"
+    )
+    error = download_file(thumbnail_url, thumbnail_file)
 
     if bpy.context.window_manager.pha_props.progress_cancel:
         return f"Cancelled {slug}"
 
     if error:
-        # Retry with alternate CDN
+        # Retry with alternate CDN, which serves the same files from the same origin.
         log.debug(f"Failed to get {slug} thumbnail from cdn.polyhaven.com, retrying with cdn.polyhaven.org")
-        error = download_file("https://cdn.polyhaven.org" + url_path, thumbnail_file)
+        fallback_url = thumbnail_url.replace("://cdn.polyhaven.com/", "://cdn.polyhaven.org/", 1)
+        error = download_file(fallback_url, thumbnail_file)
 
     if bpy.context.window_manager.pha_props.progress_cancel:
         return f"Cancelled {slug}"
