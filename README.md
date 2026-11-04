@@ -6,9 +6,9 @@ A Blender add-on to integrate our assets natively in the asset browser.
 
 ## Features
 
-1. Downloads all assets from [Poly Haven](https://polyhaven.com/), and list them under their respective categories in the Asset Browser.
+1. Downloads all assets from [Poly Haven](https://polyhaven.com/) and lists them under their respective categories in the Asset Browser.
 2. Lets you swap the resolution of an asset to higher/lower resolutions any time after import (most are at least 8K).
-3. Set the texture mapping scale to the correct real-world size according to the surfaces you've applied it to.
+3. Sets the texture mapping scale to the correct real-world size according to the surfaces you've applied it to.
 4. One-click setup of texture displacement with adaptive subdivision.
 5. Simple HDRI rotation, brightness, and color temperature sliders.
 
