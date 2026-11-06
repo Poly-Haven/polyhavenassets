@@ -14,7 +14,7 @@ A Blender add-on to integrate our assets natively in the asset browser.
 
 ## Installation
 
-This add-on is meant to be purchased on [Superhive](https://superhivemarket.com/products/poly-haven-asset-browser) or through [Patreon](https://www.patreon.com/posts/70974704) to support our work making new assets.
+This add-on is meant to be purchased on [Superhive](https://superhivemarket.com/products/poly-haven-asset-browser?ref=3841) or through [Patreon](https://www.patreon.com/posts/70974704) to support our work making new assets.
 
 > ## **Help make this add-on free for everyone!**
 >

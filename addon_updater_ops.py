@@ -887,7 +887,7 @@ def update_notice_box_ui(self, context):
         # ops.url=updater.update_link
         col.operator(AddonUpdaterInstallManually.bl_idname, text="Install manually")
         col.operator("wm.url_open", text="See changes").url = (
-            "https://blendermarket.com/products/poly-haven-asset-browser"
+            "https://superhivemarket.com/products/poly-haven-asset-browser?ref=3841"
         )
     else:
         # ops = col.operator("wm.url_open", text="Direct download")
